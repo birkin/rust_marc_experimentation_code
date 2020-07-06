@@ -1,8 +1,5 @@
 extern crate glob;  // <https://docs.rs/glob/0.3.0/glob/>
 
-// use std::fmt::Debug;
-// use std::fmt::Display;
-
 use glob::glob;
 
 
