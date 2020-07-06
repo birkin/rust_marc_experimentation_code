@@ -8,7 +8,7 @@ use glob::glob;
 
 fn main() {
 
-    let file_download_dir: String = "../../source_files".to_string();
+    let file_download_dir: String = "./source_files".to_string();
     let pattern: String = format!( "{}/*.mrc", file_download_dir );
     println!("pattern, ``{:?}``", pattern);
 
