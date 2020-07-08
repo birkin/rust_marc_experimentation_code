@@ -1,5 +1,6 @@
 
 - next...
+    - add comments to each step of exp02_read_marc_file load_records()
     - pull out item-number also.
     - process a directory instead of file directly.
 

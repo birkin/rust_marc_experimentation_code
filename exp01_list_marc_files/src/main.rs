@@ -25,4 +25,4 @@ fn main() {
 // -- Output...
 
 // pattern, ``"../../source_files/*.mrc"``
-// iter, ``[Ok("../../source_files/sierra_export_0726.mrc")]``
+// iter, ``[Ok("source_files/sierra_export_0726.mrc"), Ok("source_files/sierra_export_1939.mrc")]``
