@@ -1,7 +1,8 @@
 
 - next...
     √ add comments to each step of exp02_read_marc_file load_records()
-    - pull out item-number also.
+    - pull out bib and/or item-number also.
+        --> see marc_cli query.rs query_subfield() to grok and implement getting at sub-fields
     - process a directory instead of file directly.
 
 - eventually...
