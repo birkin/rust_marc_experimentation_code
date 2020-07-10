@@ -1,9 +1,13 @@
 
 - next...
     √ add comments to each step of exp02_read_marc_file load_records()
-    - pull out bib and/or item-number also.
-        --> see marc_cli query.rs query_subfield() to grok and implement getting at sub-fields
+    √ pull out bib and/or item-number also.
+        √  see marc_cli query.rs query_subfield() to grok and implement getting at sub-fields
+        x issue to consider: logic needed to ultimately present good title; i.e. subfield 'b' looks like a subtitle that should reasonably be included in the title.
+    - add single-file timing
     - process a directory instead of file directly.
+    - add total timing
+    - add async
 
 - eventually...
     - consider appending output to a file instead of storing all data in memory.
