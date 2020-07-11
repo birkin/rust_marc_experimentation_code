@@ -4,6 +4,9 @@
     √ pull out bib and/or item-number also.
         √  see marc_cli query.rs query_subfield() to grok and implement getting at sub-fields
         x issue to consider: logic needed to ultimately present good title; i.e. subfield 'b' looks like a subtitle that should reasonably be included in the title.
+    - refactor
+        - iterate throught the subfields once, pulling out the main-title and remainder and printing them
+        - perform logic out of main()
     - add single-file timing
     - process a directory instead of file directly.
     - add total timing
