@@ -37,9 +37,10 @@ fn main() {
         println!("\nnew rec...");
 
         for field in rec.field( Tag::from(title_field_tag.as_str()) ).iter() {
-            println!( "all_title_subfields, ``{}``", field.get_data::<str>() );
+            // println!( "all_title_subfields, ``{}``", field.get_data::<str>() );
             let mut title: String = "".to_string();
             let mut final_title: String = "".to_string();
+
             for subfield in field.subfield( Identifier::from(title_subfield_main_identifier.as_str()) ).iter() {
                 title = format!( "{}", subfield.get_data::<str>() );
                 // println!( "``- {}``", subfield.get_data::<str>() );
@@ -47,7 +48,7 @@ fn main() {
             }
             for subfield in field.subfield( Identifier::from(title_subfield_remainder_identifier.as_str()) ).iter() {
                 let subtitle: String = format!( "{}", subfield.get_data::<str>() );
-                println!("subtitle, ``{:?}``", subtitle );
+                // println!("subtitle, ``{:?}``", subtitle );
                 if subtitle.chars().count() > 1 {
                     final_title = format!( "{} {}", &title, &subtitle );
                 }
@@ -56,14 +57,21 @@ fn main() {
             if final_title.chars().count() == 0 {
                 final_title = format!( "{}", &title );
             }
-            println!("final_title, ``{:?}``", final_title);
+            println!("full_title, ``{:?}``", final_title);
         }
 
         for field in rec.field( Tag::from(bib_field_tag.as_str()) ).iter() {
-            println!( "all_bib_subfields, ``{:?}``", field.get_data::<str>() );
+            // println!( "all_bib_subfields, ``{:?}``", field.get_data::<str>() );
+            let mut raw_bib: String = "".to_string();
+
             for subfield in field.subfield( Identifier::from(bib_subfield_bib_identifier.as_str()) ).iter() {
-                println!( "bib_subfield, ``{}``", subfield.get_data::<str>() );
+                raw_bib = format!( "{}", subfield.get_data::<str>() );
+                // println!( "bib_subfield, ``{}``", subfield.get_data::<str>() );
+                println!("bib_subfield, ``{:?}``", raw_bib );
+                // let bib_url: String = make_bib_url( )
             }
+
+            let bib_url: String = make_bib_url( &raw_bib );
 
         }
 
@@ -71,6 +79,25 @@ fn main() {
 
 }
 
+
+fn make_bib_url( raw_bib: &str ) -> String {
+    let end: usize = raw_bib.len();
+    println!("end, ``{:?}``", end );
+    let start: usize = 1;
+    // let bib_a: String = &raw_bib[ start..end ].to_string();
+    // let bib_a: String = &raw_bib[ start..end ];
+    let bib_a: String = ( &raw_bib[start..end ]).to_string();
+    println!("bib_a, ``{:?}``", bib_a );
+
+    let end_2: usize = &bib_a.len() - 1;
+    let start_2: usize = 0;
+    let bib_b: String = ( &bib_a[start_2..end_2 ]).to_string();
+
+    // let bib_url: String = "foo".to_string();
+    let bib_url: String = format!( "https://search.library.brown.edu/catalog/{}", &bib_b );
+    println!( "bib_url, ``{:?}``", bib_url );
+    bib_url
+}
 
 
 fn load_records( file_path: &str ) -> Vec< marc::Record<'static> > {

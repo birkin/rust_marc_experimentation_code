@@ -3,9 +3,11 @@
     √ add comments to each step of exp02_read_marc_file load_records()
     √ pull out bib and/or item-number also.
         √  see marc_cli query.rs query_subfield() to grok and implement getting at sub-fields
-        x issue to consider: logic needed to ultimately present good title; i.e. subfield 'b' looks like a subtitle that should reasonably be included in the title.
+        √ issue to consider: logic needed to ultimately present good title; i.e. subfield 'b' looks like a subtitle that should reasonably be included in the title.
+    √ print bib-url
+    - disable extraneous print statements.
     - refactor
-        - iterate throught the subfields once, pulling out the main-title and remainder and printing them
+        x iterate throught the subfields once, pulling out the main-title and remainder and printing them -- later
         - perform logic out of main()
     - add single-file timing
     - process a directory instead of file directly.
