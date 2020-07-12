@@ -38,13 +38,25 @@ fn main() {
 
         for field in rec.field( Tag::from(title_field_tag.as_str()) ).iter() {
             println!( "all_title_subfields, ``{}``", field.get_data::<str>() );
-            println!("cleaned title...");
+            let mut title: String = "".to_string();
+            let mut final_title: String = "".to_string();
             for subfield in field.subfield( Identifier::from(title_subfield_main_identifier.as_str()) ).iter() {
-                println!( "``- {}``", subfield.get_data::<str>() );
+                title = format!( "{}", subfield.get_data::<str>() );
+                // println!( "``- {}``", subfield.get_data::<str>() );
+                // println!("title: ``{:?}``", title);
             }
             for subfield in field.subfield( Identifier::from(title_subfield_remainder_identifier.as_str()) ).iter() {
-                println!( "``--- {}``", subfield.get_data::<str>() );
+                let subtitle: String = format!( "{}", subfield.get_data::<str>() );
+                println!("subtitle, ``{:?}``", subtitle );
+                if subtitle.chars().count() > 1 {
+                    final_title = format!( "{} {}", &title, &subtitle );
+                }
+                // println!( "``--- subtitle --- {}``", subfield.get_data::<str>() );
             }
+            if final_title.chars().count() == 0 {
+                final_title = format!( "{}", &title );
+            }
+            println!("final_title, ``{:?}``", final_title);
         }
 
         for field in rec.field( Tag::from(bib_field_tag.as_str()) ).iter() {
