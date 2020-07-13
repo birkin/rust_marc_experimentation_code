@@ -5,10 +5,10 @@
         √  see marc_cli query.rs query_subfield() to grok and implement getting at sub-fields
         √ issue to consider: logic needed to ultimately present good title; i.e. subfield 'b' looks like a subtitle that should reasonably be included in the title.
     √ print bib-url
-    - disable extraneous print statements.
-    - refactor
+    √ disable extraneous print statements.
+    √ refactor
         x iterate throught the subfields once, pulling out the main-title and remainder and printing them -- later
-        - perform logic out of main()
+        √ perform logic out of main()
     - add single-file timing
     - process a directory instead of file directly.
     - add total timing
