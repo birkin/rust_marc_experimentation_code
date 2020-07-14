@@ -9,9 +9,8 @@
     √ refactor
         x iterate throught the subfields once, pulling out the main-title and remainder and printing them -- later
         √ perform logic out of main()
-    - add single-file timing
-    - process a directory instead of file directly.
-    - add total timing
+    √ process a directory instead of file directly.
+    - add individual-file and total timing
     - add async
 
 - eventually...
