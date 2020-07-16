@@ -11,7 +11,9 @@
         √ perform logic out of main()
     √ process a directory instead of file directly.
     √ add individual-file and total timing
-    - add async
+    --> implement same in python
+    - add async to rust
+    - add async to python
 
 - eventually...
     - consider appending output to a file instead of storing all data in memory.
