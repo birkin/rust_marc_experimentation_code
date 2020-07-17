@@ -7,7 +7,8 @@ use marc::*;
 use std::fs::File;
 use std::path::Path;
 use std::io::{BufRead, BufReader};
-use std::time::{Duration, Instant};
+// use std::time::{Duration, Instant};
+use std::time::{Instant};
 
 
 /*
@@ -24,7 +25,7 @@ fn main() {
 
     let file_download_dir: String = "./source_files".to_string();
     let pattern: String = format!( "{}/*.mrc", file_download_dir );
-    println!("pattern, ``{:?}``", pattern);
+    // println!("pattern, ``{:?}``", pattern);
 
     let paths: glob::Paths = glob( &pattern ).unwrap_or_else( |err| {
         panic!("could not glob the pattern; error, ``{}``", err);
@@ -74,13 +75,15 @@ fn main() {
 
         }
 
-        let file_duration: Duration = file_start_time.elapsed();
+        // let file_duration: Duration = file_start_time.elapsed();
+        let file_duration: f32 = file_start_time.elapsed().as_secs_f32();
         println!( "{}", format!("\nfile-elapsed-time, ``{:?}``", file_duration) );
 
     }  // end of for path_buf_result in paths {
 
-    let all_files_duration: Duration = first_start_time.elapsed();
-    println!( "{}", format!("\nall-files-elapsed-time, ``{:?}``", all_files_duration) );
+    // let all_files_duration: Duration = first_start_time.elapsed();
+    let all_files_duration: f32 = first_start_time.elapsed().as_secs_f32();
+    println!( "{}", format!("\nall-files-elapsed-time, ``{:?}``\n", all_files_duration) );
 
 }
 
