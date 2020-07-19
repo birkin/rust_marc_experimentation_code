@@ -57,6 +57,12 @@ fn main() {
         panic!( "problem initializing the output file; error, ``{}``", err );
     });
 
+    // -- get an append file-handler that i'll pass to the writer functions
+    let fappend = fs::OpenOptions::new()
+        .append(true)
+        .open( &output_filepath )
+        .unwrap();
+
     // -- loop through paths
     let mut file_counter: i32 = 0;
     for marc_filepath in marc_filepaths {
@@ -73,11 +79,12 @@ fn main() {
         for rec in marc_records.iter() {  // yields: `&marc::Record<'_>`
             // println!("\nnew record...");
             for field in rec.field( Tag::from(title_field_tag.as_str()) ).iter() {
-                // process_title( field, &title_subfield_main_identifier, &title_subfield_remainder_identifier );
-                process_title( field, &title_subfield_main_identifier, &title_subfield_remainder_identifier, &output_filepath );
+                // process_title( field, &title_subfield_main_identifier, &title_subfield_remainder_identifier, &output_filepath );
+                process_title( field, &title_subfield_main_identifier, &title_subfield_remainder_identifier, &fappend );
             }
             for field in rec.field( Tag::from(bib_field_tag.as_str()) ).iter() {
-                process_bib( field, &bib_subfield_bib_identifier, &output_filepath )
+                // process_bib( field, &bib_subfield_bib_identifier, &output_filepath )
+                process_bib( field, &bib_subfield_bib_identifier, &fappend )
             }
         }
 
@@ -92,14 +99,16 @@ fn main() {
     // let all_files_duration: Duration = first_start_time.elapsed();
     println!("\n-------");
     println!( "\nfiles processed, ``{:?}``", file_counter );
-    let all_files_duration: f32 = first_start_time.elapsed().as_secs_f32();
-    println!( "{}", format!("\nall-files-elapsed-time, ``{:?}`` seconds\n", all_files_duration) );
+    // let all_files_duration: f32 = first_start_time.elapsed().as_secs_f32();
+    // println!( "{}", format!("\nall-files-elapsed-time, ``{:?}`` seconds\n", all_files_duration) );
+    let all_files_duration_in_minutes: f32 = first_start_time.elapsed().as_secs_f32() / 60.0;
+    println!( "{}", format!("\nall-files-elapsed-time, ``{:?}`` minutes\n", all_files_duration_in_minutes) );
 
-}
+}  // end `fn main() {`
 
 
-// fn process_title( field: &marc::Field<'_>, title_subfield_main_identifier: &str, title_subfield_remainder_identifier: &str ) {
-fn process_title( field: &marc::Field<'_>, title_subfield_main_identifier: &str, title_subfield_remainder_identifier: &str, output_filepath: &str ) {
+// fn process_title( field: &marc::Field<'_>, title_subfield_main_identifier: &str, title_subfield_remainder_identifier: &str, output_filepath: &str ) {
+fn process_title( field: &marc::Field<'_>, title_subfield_main_identifier: &str, title_subfield_remainder_identifier: &str, mut fappend: &std::fs::File ) {
 
     // println!( "all_title_subfields, ``{}``", field.get_data::<str>() );
     let mut title: String = "".to_string();
@@ -123,10 +132,13 @@ fn process_title( field: &marc::Field<'_>, title_subfield_main_identifier: &str,
     }
     // println!("full_title, ``{:?}``", final_title);
 
-    let mut fappend = fs::OpenOptions::new()
-        .append(true)
-        .open( output_filepath )
-        .unwrap();
+    // let mut fappend = fs::OpenOptions::new()
+    //     .append(true)
+    //     .open( output_filepath )
+    //     .unwrap();
+    // let x = &fappend;
+    // println!("x, ``{:?}``", x);
+    // let zz: () = x;  // yields: found `&std::fs::File`
 
     write!( fappend, "{}", &final_title ).unwrap();
     // fappend.write_all( "{}", &final_title ).unwrap();
@@ -134,7 +146,8 @@ fn process_title( field: &marc::Field<'_>, title_subfield_main_identifier: &str,
 }
 
 
-fn process_bib( field: &marc::Field<'_>, bib_subfield_bib_identifier: &str, output_filepath: &str ) {
+// fn process_bib( field: &marc::Field<'_>, bib_subfield_bib_identifier: &str, output_filepath: &str ) {
+fn process_bib( field: &marc::Field<'_>, bib_subfield_bib_identifier: &str, mut fappend: &std::fs::File ) {
 
     // println!( "all_bib_subfields, ``{:?}``", field.get_data::<str>() );
     let mut raw_bib: String = "".to_string();
@@ -148,10 +161,10 @@ fn process_bib( field: &marc::Field<'_>, bib_subfield_bib_identifier: &str, outp
 
     // make_bib_url( &raw_bib );
     let bib_url: String = make_bib_url( &raw_bib );
-    let mut fappend = fs::OpenOptions::new()
-        .append(true)
-        .open( output_filepath )
-        .unwrap();
+    // let mut fappend = fs::OpenOptions::new()
+    //     .append(true)
+    //     .open( output_filepath )
+    //     .unwrap();
 
     write!( fappend, "\n{}\n\n", &bib_url ).unwrap();
 
