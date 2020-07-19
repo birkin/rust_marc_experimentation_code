@@ -58,11 +58,12 @@ fn main() {
     });
 
     // -- loop through paths
+    let mut file_counter: i32 = 0;
     for marc_filepath in marc_filepaths {
 
         // println!("\nnew file...");
-        let file_start_time = Instant::now();
-        println!( "\nmarc_filepath, ``{:?}``", marc_filepath );
+        // let file_start_time = Instant::now();
+        // println!( "\nmarc_filepath, ``{:?}``", marc_filepath );  // prolly print this
 
         // -- load file into marc-reader
         let marc_records: Vec<marc::Record> = load_records( &marc_filepath );
@@ -81,12 +82,16 @@ fn main() {
         }
 
         // let file_duration: Duration = file_start_time.elapsed();
-        let file_duration: f32 = file_start_time.elapsed().as_secs_f32();
-        println!( "{}", format!("file-elapsed-time, ``{:?}`` seconds", file_duration) );
+        // let file_duration: f32 = file_start_time.elapsed().as_secs_f32();
+        // println!( "{}", format!("file-elapsed-time, ``{:?}`` seconds", file_duration) );  // maybe print this
 
-    }  // end of for path_buf_result in paths {
+        file_counter += 1;
+
+    }  // end of `for marc_filepath in marc_filepaths {`
 
     // let all_files_duration: Duration = first_start_time.elapsed();
+    println!("\n-------");
+    println!( "\nfiles processed, ``{:?}``", file_counter );
     let all_files_duration: f32 = first_start_time.elapsed().as_secs_f32();
     println!( "{}", format!("\nall-files-elapsed-time, ``{:?}`` seconds\n", all_files_duration) );
 
