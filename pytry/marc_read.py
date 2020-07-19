@@ -8,7 +8,7 @@ FILES_DIR = './source_files'
 
 def process_marc_files():
 
-    file_start_time = datetime.datetime.now()
+    first_start_time = datetime.datetime.now()
 
     ## get list of files
     marc_file_list: list = create_marc_file_list()
@@ -34,7 +34,7 @@ def process_marc_files():
         print( f'\nfile-elapsed-time, ``{file_end_time - file_start_time}``' )
 
     all_files_end_time = datetime.datetime.now()
-    print( f'\nall-files-elapsed-time, ``{all_files_end_time - file_start_time}``\n' )
+    print( f'\nall-files-elapsed-time, ``{all_files_end_time - first_start_time}``\n' )
 
     ## end process_marc_files()
 
