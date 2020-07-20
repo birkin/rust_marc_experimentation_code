@@ -50,7 +50,7 @@ def process_marc_files():
                     fh_a.write( f'https://search.library.brown.edu/catalog/{bib[1:-1]}\n\n' )
 
             file_end_time = datetime.datetime.now()
-            print( f'\nfile-elapsed-time, ``{file_end_time - file_start_time}``' )
+            # print( f'\nfile-elapsed-time, ``{file_end_time - file_start_time}``' )
 
     all_files_end_time = datetime.datetime.now()
     all_files_elapsed = all_files_end_time - first_start_time  # yields type: <class 'datetime.timedelta'>
@@ -62,11 +62,11 @@ def process_marc_files():
 
 def create_marc_file_list():
     marc_file_list = sorted( glob.glob('%s/*.mrc' % SOURCE_FILES_DIR) )
-    print( f'marc_file_list, ``{pprint.pformat(marc_file_list)}``' )
+    # print( f'marc_file_list, ``{pprint.pformat(marc_file_list)}``' )
     return marc_file_list
 
 
 if __name__ == '__main__':
-    print( '\n-------\nstarting `main`' )
+    # print( '\n-------\nstarting `main`' )
     process_marc_files()
-    print( '`main` complete\n-------\n' )
+    # print( '`main` complete\n-------\n' )
