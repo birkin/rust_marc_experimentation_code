@@ -11,8 +11,9 @@
         √ perform logic out of main()
     √ process a directory instead of file directly.
     √ add individual-file and total timing
-    --> implement same in python
-    - add async to rust
+    √ implement same in python
+    --> add async to rust
+        - how to pass String or &str in the ```tokio::spawn( async move {``` block?
     - add async to python
 
 - eventually...
