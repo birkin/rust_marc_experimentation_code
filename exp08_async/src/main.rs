@@ -41,6 +41,11 @@ async fn main() -> io::Result<()> {
 
     // -- set vars for loop
     let title_field_tag: String = "245".to_string();
+    // let zz: () = title_field_tag;  // yields: found struct `std::string::String`
+
+    // let foo = title_field_tag.to_string();
+    // let zz: () = foo;  yields: found struct `std::string::String`
+
     let title_subfield_main_identifier: String = "a".to_string();
     let title_subfield_remainder_identifier: String = "b".to_string();
     let bib_field_tag: String = "907".to_string();
@@ -75,39 +80,30 @@ async fn main() -> io::Result<()> {
     // -- loop through paths
     // let mut file_counter: i32 = 0;
     for marc_filepath in marc_filepaths {  // marc_filepath type-check yields: found struct `std::string::String`
-
         let mut tx = tx.clone();
+        // let title_field_tag_B = title_field_tag.to_string();
+
+        // tokio::spawn( async move {
+        //     let text_to_write: String = test_computation(
+        //         &marc_filepath,
+        //         &title_field_tag_B
+        //         ).await;
+        //     tx.send( text_to_write ).await.unwrap();
+        // });
+
+        let inner_title_field_tag = title_field_tag.to_string();
 
         tokio::spawn( async move {
             let text_to_write: String = expensive_computation(
                 &marc_filepath,
-                title_field_tag.clone(),
+                &inner_title_field_tag,
                 &title_subfield_main_identifier,
                 &title_subfield_remainder_identifier,
                 &bib_field_tag,
-                &bib_subfield_bib_identifier ).await;
+                &bib_subfield_bib_identifier
+                ).await;
             tx.send( text_to_write ).await.unwrap();
         });
-
-        // -- load file into marc-reader
-        // let marc_records: Vec<marc::Record> = load_records( &marc_filepath );
-
-        // -- process records
-        // for rec in marc_records.iter() {  // yields: `&marc::Record<'_>`
-        //     let mut title: String = "".to_string();
-        //     let mut bib: String = "".to_string();
-        //     // println!("\nnew record...");
-        //     for field in rec.field( Tag::from(title_field_tag.as_str()) ).iter() {
-        //         // process_title( field, &title_subfield_main_identifier, &title_subfield_remainder_identifier, &output_filepath );
-        //         title = process_title( field, &title_subfield_main_identifier, &title_subfield_remainder_identifier, &fappend );
-        //     }
-        //     for field in rec.field( Tag::from(bib_field_tag.as_str()) ).iter() {
-        //         // process_bib( field, &bib_subfield_bib_identifier, &output_filepath )
-        //         bib = process_bib( field, &bib_subfield_bib_identifier, &fappend );
-        //     }
-
-        //     let text_to_write = format!( "title, ``{}``; bib, ``{}``", &title, &bib  );
-        // }
 
     }  // end of `for marc_filepath in marc_filepaths {`
 
@@ -141,9 +137,26 @@ fn write_to_file( mut fappend: &std::fs::File, text_to_write: &str ) {
 
 
 
+// async fn test_computation(
+//     marc_filepath: &str,
+//     title_field_tag_B: &str
+//     ) -> String {
+
+//     // -- load file into marc-reader
+//     let marc_records: Vec<marc::Record> = load_records( marc_filepath );
+//     println!( "marc_records, ``{:?}``", marc_records);
+
+//     println!( "title_field_tag_B, ``{:?}``", title_field_tag_B );
+
+//     "foo".to_string()
+
+// }
+
+
+
 async fn expensive_computation(
     marc_filepath: &str,
-    title_field_tag: String,
+    inner_title_field_tag: &str,
     title_subfield_main_identifier: &str,
     title_subfield_remainder_identifier: &str,
     bib_field_tag: &str,
@@ -159,7 +172,7 @@ async fn expensive_computation(
         let mut title: String = "".to_string();
         let mut bib: String = "".to_string();
         // println!("\nnew record...");
-        for field in rec.field( Tag::from(title_field_tag.as_str()) ).iter() {
+        for field in rec.field( Tag::from(inner_title_field_tag) ).iter() {
             // process_title( field, &title_subfield_main_identifier, &title_subfield_remainder_identifier, &output_filepath );
             title = process_title( field, title_subfield_main_identifier, &title_subfield_remainder_identifier );
         }

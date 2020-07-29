@@ -14,6 +14,7 @@
     √ implement same in python
     --> add async to rust
         - how to pass String or &str in the ```tokio::spawn( async move {``` block?
+            x I think I got it... next try with other strings.
     - add async to python
 
 - eventually...
