@@ -143,17 +143,17 @@ async fn expensive_computation(
     inner_title_subfield_remainder_identifier: &str,
     inner_bib_field_tag: &str,
     inner_bib_subfield_bib_identifier: &str,
-    first_start_time: time::Instant
+    _first_start_time: time::Instant
     ) -> String {
 
-    let file_start_time = Instant::now();
+    let _file_start_time = Instant::now();
 
     // -- load file into marc-reader
     let marc_records: Vec<marc::Record> = load_records( marc_filepath );
 
     // -- process records
     let mut text_to_write: String = "".to_string();
-    let mut counter: i32 = 0;
+    let mut _counter: i32 = 0;
     for rec in marc_records.iter() {  // yields: `&marc::Record<'_>`
         let mut title: String = "".to_string();
         let mut bib: String = "".to_string();
@@ -170,15 +170,15 @@ async fn expensive_computation(
         text_to_write = format!( "{}\n{}\n\n{}", &title, &bib, text_to_write  );
         // text_to_write = format!( "title, ``{}``; bib, ``{}``", &title, &bib  );
 
-        counter += 1;
+        _counter += 1;
     }
 
-    let msg: String = format!( "that_took, ``{:?}`` -- for a total elapsed time of, ``{:?}`` -- to process ``{:?}`` records -- on thread, ``{:?}``",
-        file_start_time.elapsed(),
-        first_start_time.elapsed(),
-        counter,
-        std::thread::current().id() ).to_string();
-    println!( "msg, {:?}", msg );
+    // let msg: String = format!( "that_took, ``{:?}`` -- for a total elapsed time of, ``{:?}`` -- to process ``{:?}`` records -- on thread, ``{:?}``",
+    //     file_start_time.elapsed(),
+    //     first_start_time.elapsed(),
+    //     counter,
+    //     std::thread::current().id() ).to_string();
+    // println!( "msg, {:?}", msg );
 
     text_to_write
 }
