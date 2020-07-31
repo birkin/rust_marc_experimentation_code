@@ -1,7 +1,7 @@
 extern crate glob;  // <https://docs.rs/glob/0.3.0/glob/>
 extern crate marc; // <https://github.com/blackbeam/rust-marc>
 
-use chrono::{DateTime, Local};
+// use chrono::{DateTime, Local};
 use glob::glob;
 use marc::*;
 
@@ -13,7 +13,7 @@ use std::io::{BufRead, BufReader};
 use std::path::Path;
 use std::time::{Instant};
 use std::time;
-use std::thread::sleep;
+// use std::thread::sleep;
 
 
 
@@ -30,7 +30,6 @@ const RECORD_TERMINATOR: u8 = 0x1D;
 
 #[tokio::main]
 async fn main() -> io::Result<()> {
-    let start_now = time::Instant::now();
     let first_start_time = Instant::now();
 
     // -- set non-loop vars
@@ -92,15 +91,20 @@ async fn main() -> io::Result<()> {
         // });
 
         let inner_title_field_tag = title_field_tag.to_string();
+        let inner_title_subfield_main_identifier = title_subfield_main_identifier.to_string();
+        let inner_title_subfield_remainder_identifier = title_subfield_remainder_identifier.to_string();
+        let inner_bib_field_tag = bib_field_tag.to_string();
+        let inner_bib_subfield_bib_identifier = bib_subfield_bib_identifier.to_string();
 
         tokio::spawn( async move {
             let text_to_write: String = expensive_computation(
                 &marc_filepath,
                 &inner_title_field_tag,
-                &title_subfield_main_identifier,
-                &title_subfield_remainder_identifier,
-                &bib_field_tag,
-                &bib_subfield_bib_identifier
+                &inner_title_subfield_main_identifier,
+                &inner_title_subfield_remainder_identifier,
+                &inner_bib_field_tag,
+                &inner_bib_subfield_bib_identifier,
+                first_start_time
                 ).await;
             tx.send( text_to_write ).await.unwrap();
         });
@@ -117,11 +121,7 @@ async fn main() -> io::Result<()> {
     }
 
 
-    // let all_files_duration: Duration = first_start_time.elapsed();
     println!("\n-------");
-    // println!( "\nfiles processed, ``{:?}``", file_counter );
-    // let all_files_duration: f32 = first_start_time.elapsed().as_secs_f32();
-    // println!( "{}", format!("\nall-files-elapsed-time, ``{:?}`` seconds\n", all_files_duration) );
     let all_files_duration_in_minutes: f32 = first_start_time.elapsed().as_secs_f32() / 60.0;
     println!( "{}", format!("\nall-files-elapsed-time, ``{:?}`` minutes\n", all_files_duration_in_minutes) );
 
@@ -136,78 +136,54 @@ fn write_to_file( mut fappend: &std::fs::File, text_to_write: &str ) {
 }
 
 
-
-// async fn test_computation(
-//     marc_filepath: &str,
-//     title_field_tag_B: &str
-//     ) -> String {
-
-//     // -- load file into marc-reader
-//     let marc_records: Vec<marc::Record> = load_records( marc_filepath );
-//     println!( "marc_records, ``{:?}``", marc_records);
-
-//     println!( "title_field_tag_B, ``{:?}``", title_field_tag_B );
-
-//     "foo".to_string()
-
-// }
-
-
-
 async fn expensive_computation(
     marc_filepath: &str,
     inner_title_field_tag: &str,
-    title_subfield_main_identifier: &str,
-    title_subfield_remainder_identifier: &str,
-    bib_field_tag: &str,
-    bib_subfield_bib_identifier: &str ) -> String {
+    inner_title_subfield_main_identifier: &str,
+    inner_title_subfield_remainder_identifier: &str,
+    inner_bib_field_tag: &str,
+    inner_bib_subfield_bib_identifier: &str,
+    first_start_time: time::Instant
+    ) -> String {
 
+    let file_start_time = Instant::now();
 
     // -- load file into marc-reader
     let marc_records: Vec<marc::Record> = load_records( marc_filepath );
 
     // -- process records
     let mut text_to_write: String = "".to_string();
+    let mut counter: i32 = 0;
     for rec in marc_records.iter() {  // yields: `&marc::Record<'_>`
         let mut title: String = "".to_string();
         let mut bib: String = "".to_string();
         // println!("\nnew record...");
         for field in rec.field( Tag::from(inner_title_field_tag) ).iter() {
             // process_title( field, &title_subfield_main_identifier, &title_subfield_remainder_identifier, &output_filepath );
-            title = process_title( field, title_subfield_main_identifier, &title_subfield_remainder_identifier );
+            title = process_title( field, inner_title_subfield_main_identifier, inner_title_subfield_remainder_identifier );
         }
-        for field in rec.field( Tag::from(bib_field_tag) ).iter() {
+        for field in rec.field( Tag::from(inner_bib_field_tag) ).iter() {
             // process_bib( field, &bib_subfield_bib_identifier, &output_filepath )
-            bib = process_bib( field, &bib_subfield_bib_identifier );
+            bib = process_bib( field, inner_bib_subfield_bib_identifier );
         }
 
-        text_to_write = format!( "{}\n\ntitle, ``{}``; bib, ``{}``", text_to_write, &title, &bib  );
+        text_to_write = format!( "{}\n{}\n\n{}", &title, &bib, text_to_write  );
         // text_to_write = format!( "title, ``{}``; bib, ``{}``", &title, &bib  );
+
+        counter += 1;
     }
 
-
-    // let text_to_write: String = "testing 1, 2, 3".to_string();
+    let msg: String = format!( "that_took, ``{:?}`` -- for a total elapsed time of, ``{:?}`` -- to process ``{:?}`` records -- on thread, ``{:?}``",
+        file_start_time.elapsed(),
+        first_start_time.elapsed(),
+        counter,
+        std::thread::current().id() ).to_string();
+    println!( "msg, {:?}", msg );
 
     text_to_write
 }
 
 
-// async fn expensive_computation( input: u32, start_now: time::Instant ) -> String {
-//     let now = time::Instant::now();  // for elapsed-time
-//     let local_time: DateTime<Local> = Local::now();
-//     println!( "\nstarting expensive_computation at, ``{:?}`` on thread, ``{:?}``", local_time.to_rfc3339(), std::thread::current().id() );
-
-//     sleep( time::Duration::from_secs(2) );
-//     let msg: String = format!( "that_took, ``{:?}`` -- for a total elapsed time of, ``{:?}`` -- on thread, ``{:?}``", now.elapsed(), start_now.elapsed(), std::thread::current().id() ).to_string();
-//     println!( "msg, {:?}", msg );
-
-//     let text_to_write: String = format!( "the result of computation {}", input );
-//     text_to_write
-// }
-
-
-
-// fn process_title( field: &marc::Field<'_>, title_subfield_main_identifier: &str, title_subfield_remainder_identifier: &str, output_filepath: &str ) {
 fn process_title( field: &marc::Field<'_>, title_subfield_main_identifier: &str, title_subfield_remainder_identifier: &str ) -> String {
 
     // println!( "all_title_subfields, ``{}``", field.get_data::<str>() );
@@ -230,16 +206,12 @@ fn process_title( field: &marc::Field<'_>, title_subfield_main_identifier: &str,
     if final_title.chars().count() == 0 {
         final_title = format!( "{}", &title );
     }
-    // println!("full_title, ``{:?}``", final_title);
 
     final_title
-
-    // write!( fappend, "{}", &final_title ).unwrap();
 
 }
 
 
-// fn process_bib( field: &marc::Field<'_>, bib_subfield_bib_identifier: &str, output_filepath: &str ) {
 fn process_bib( field: &marc::Field<'_>, bib_subfield_bib_identifier: &str ) -> String {
 
     // println!( "all_bib_subfields, ``{:?}``", field.get_data::<str>() );
