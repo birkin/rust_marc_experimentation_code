@@ -57,8 +57,14 @@ async fn main() -> io::Result<()> {
 
     let mut marc_filepaths: Vec<String> = Vec::new();
     for path in paths {  // // path type check yields: found enum `std::result::Result<std::path::PathBuf, glob::GlobError>`
-        let path_buf: std::path::PathBuf = path.unwrap();
-        let path_str: &str = path_buf.to_str().unwrap_or_else( || {panic!("problem converting PathBuf obj to &str  -- ``{:?}``");} );
+        // let path_buf: std::path::PathBuf = path.unwrap();
+        let path_buf: std::path::PathBuf = path.unwrap_or_else( |err| {
+            panic!( "problem creating path_buf; error, ``{:?}``", err );
+        } );
+        // let path_str: &str = path_buf.to_str().unwrap_or_else( || {panic!("problem converting PathBuf obj to &str  -- ``{:?}``");} );
+        let path_str: &str = path_buf.to_str().unwrap_or_else( || {
+            panic!( "problem converting PathBuf obj to &str" );
+        } );
         let marc_filepath: String = path_str.into();
         marc_filepaths.push( marc_filepath )
     }
@@ -66,29 +72,29 @@ async fn main() -> io::Result<()> {
     // -- clear output file
     // let mut f: std::fs::File = File::create( &output_filepath ).unwrap();
     fs::File::create( &output_filepath ).unwrap_or_else( |err| {
-        panic!( "problem initializing the output file; error, ``{}``", err );
+        panic!( "problem initializing the output file; error, ``{:?}``", err );
     });
 
     // -- get an append file-handler that i'll pass to the writer functions
+    // let fappend = fs::OpenOptions::new()
+    //     .append(true)
+    //     .open( &output_filepath )
+    //     .unwrap();
+
     let fappend = fs::OpenOptions::new()
         .append(true)
         .open( &output_filepath )
-        .unwrap();
+        .unwrap_or_else( |err| {
+            panic!( "problem initializing fappend; error, ``{:?}``", err );
+        } );
+
 
     let (tx, mut rx) = mpsc::channel( 100 );
     // -- loop through paths
     // let mut file_counter: i32 = 0;
     for marc_filepath in marc_filepaths {  // marc_filepath type-check yields: found struct `std::string::String`
+        println!( "marc_filepath, ``{:?}``", marc_filepath );
         let mut tx = tx.clone();
-        // let title_field_tag_B = title_field_tag.to_string();
-
-        // tokio::spawn( async move {
-        //     let text_to_write: String = test_computation(
-        //         &marc_filepath,
-        //         &title_field_tag_B
-        //         ).await;
-        //     tx.send( text_to_write ).await.unwrap();
-        // });
 
         let inner_title_field_tag = title_field_tag.to_string();
         let inner_title_subfield_main_identifier = title_subfield_main_identifier.to_string();
@@ -106,7 +112,10 @@ async fn main() -> io::Result<()> {
                 &inner_bib_subfield_bib_identifier,
                 first_start_time
                 ).await;
-            tx.send( text_to_write ).await.unwrap();
+            // tx.send( text_to_write ).await.unwrap();
+            tx.send( text_to_write ).await.unwrap_or_else( |err| {
+                panic!( "problem sending on the transmit-end; error, ``{:?}``", err );
+            } );
         });
 
     }  // end of `for marc_filepath in marc_filepaths {`
@@ -132,7 +141,10 @@ async fn main() -> io::Result<()> {
 
 
 fn write_to_file( mut fappend: &std::fs::File, text_to_write: &str ) {
-    write!( fappend, "\n\n{}", text_to_write ).unwrap();
+    // write!( fappend, "\n\n{}", text_to_write ).unwrap();
+    write!( fappend, "\n\n{}", text_to_write ).unwrap_or_else( |err| {
+        panic!( "problem on write; error, ``{:?}``", err );
+    } );
 }
 
 
@@ -227,8 +239,6 @@ fn process_bib( field: &marc::Field<'_>, bib_subfield_bib_identifier: &str ) -> 
     // make_bib_url( &raw_bib );
     let bib_url: String = make_bib_url( &raw_bib );
 
-    // write!( fappend, "\n{}\n\n", &bib_url ).unwrap();
-
     bib_url
 
 }
@@ -264,8 +274,8 @@ fn load_records( file_path: &str ) -> Vec< marc::Record<'static> > {
     let error_path_display = path.display();
 
     // access the file
-    let file = match fs::File::open(&path) {
-        Err(why) => panic!( "Couldn't open {}: {}", error_path_display, why.to_string() ),
+    let file = match fs::File::open(&path) {  // running type-check on `file` yields: found struct `std::fs::File`
+        Err(why) => panic!( "Couldn't open file, ``{:?}``; error, ``{:?}``", error_path_display, why.to_string() ),
         Ok(file) => file,
     };
 
@@ -281,8 +291,9 @@ fn load_records( file_path: &str ) -> Vec< marc::Record<'static> > {
 
     while buf_reader.read_until( RECORD_TERMINATOR, &mut marc_record_buffer ).unwrap() != 0 {
         match marc::Record::from_vec(marc_record_buffer.clone()) {
-            Err(_) => (),
-            Ok(record) => result_vector.push(record.clone()),
+            // Err(_) => (),
+            Err( err ) => panic!( "Couldn't read a marc-record; error, ``{:?}``", err.to_string() ),
+            Ok( record ) => result_vector.push(record.clone()),
         }
 
         marc_record_buffer.clear();
