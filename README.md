@@ -15,6 +15,7 @@
     √ add async to rust
     --> works from compiled version; panics from 'run' -- investigate
         - go through stack-trace
+        - make clear example in `exp08b_async_troubleshoot` and post question
     - add async to python
 
 - eventually...
