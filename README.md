@@ -16,6 +16,7 @@
     --> works from compiled version; panics from 'run' -- investigate
         - go through stack-trace
         - make clear example in `exp08b_async_troubleshoot` and post question
+            --> about to implement expensive_computation() sample (without marc library)
     - add async to python
 
 - eventually...
