@@ -17,6 +17,7 @@
         - go through stack-trace
         - make clear example in `exp08b_async_troubleshoot` and post question
             --> about to implement expensive_computation() sample (without marc library)
+            --> try to repeat overflow, then take things away.
     - add async to python
 
 - eventually...
