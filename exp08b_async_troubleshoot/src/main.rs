@@ -128,24 +128,24 @@ async fn expensive_computation(
         _counter += 1;
         text_to_write = format!( "{}; {}", &_counter, &text_to_write );
     }
-    // for rec in marc_records.iter() {  // yields: `&marc::Record<'_>`
-    //     let mut title: String = "".to_string();
-    //     let mut bib: String = "".to_string();
-    //     // println!("\nnew record...");
-    //     for field in rec.field( Tag::from(inner_title_field_tag) ).iter() {
-    //         // process_title( field, &title_subfield_main_identifier, &title_subfield_remainder_identifier, &output_filepath );
-    //         title = process_title( field, inner_title_subfield_main_identifier, inner_title_subfield_remainder_identifier );
-    //     }
-    //     for field in rec.field( Tag::from(inner_bib_field_tag) ).iter() {
-    //         // process_bib( field, &bib_subfield_bib_identifier, &output_filepath )
-    //         bib = process_bib( field, inner_bib_subfield_bib_identifier );
-    //     }
+    for rec in marc_records.iter() {  // yields: `&marc::Record<'_>`
+        let mut title: String = "".to_string();
+        let mut bib: String = "".to_string();
+        // println!("\nnew record...");
+        for field in rec.field( Tag::from(inner_title_field_tag) ).iter() {
+            // process_title( field, &title_subfield_main_identifier, &title_subfield_remainder_identifier, &output_filepath );
+            title = process_title( field, inner_title_subfield_main_identifier, inner_title_subfield_remainder_identifier );
+        }
+        for field in rec.field( Tag::from(inner_bib_field_tag) ).iter() {
+            // process_bib( field, &bib_subfield_bib_identifier, &output_filepath )
+            bib = process_bib( field, inner_bib_subfield_bib_identifier );
+        }
 
-    //     text_to_write = format!( "{}\n{}\n\n{}", &title, &bib, text_to_write  );
-    //     // text_to_write = format!( "title, ``{}``; bib, ``{}``", &title, &bib  );
+        text_to_write = format!( "{}\n{}\n\n{}", &title, &bib, text_to_write  );
+        // text_to_write = format!( "title, ``{}``; bib, ``{}``", &title, &bib  );
 
-    //     _counter += 1;
-    // }
+        _counter += 1;
+    }
 
     text_to_write
 }
@@ -197,4 +197,70 @@ fn write_to_file( mut fappend: &std::fs::File, text_to_write: &str ) {
     write!( fappend, "\n\n{}", text_to_write ).unwrap_or_else( |err| {
         panic!( "problem on write; error, ``{:?}``", err );
     } );
+}
+
+
+fn process_title( field: &marc::Field<'_>, title_subfield_main_identifier: &str, title_subfield_remainder_identifier: &str ) -> String {
+
+    // println!( "all_title_subfields, ``{}``", field.get_data::<str>() );
+    let mut title: String = "".to_string();
+    let mut final_title: String = "".to_string();
+
+    for subfield in field.subfield( Identifier::from(title_subfield_main_identifier) ).iter() {
+        title = format!( "{}", subfield.get_data::<str>() );
+        // println!( "``- {}``", subfield.get_data::<str>() );
+        // println!("title: ``{:?}``", title);
+    }
+    for subfield in field.subfield( Identifier::from(title_subfield_remainder_identifier) ).iter() {
+        let subtitle: String = format!( "{}", subfield.get_data::<str>() );
+        // println!("subtitle, ``{:?}``", subtitle );
+        if subtitle.chars().count() > 1 {
+            final_title = format!( "{} {}", &title, &subtitle );
+        }
+        // println!( "``--- subtitle --- {}``", subfield.get_data::<str>() );
+    }
+    if final_title.chars().count() == 0 {
+        final_title = format!( "{}", &title );
+    }
+
+    final_title
+
+}
+
+
+fn process_bib( field: &marc::Field<'_>, bib_subfield_bib_identifier: &str ) -> String {
+
+    // println!( "all_bib_subfields, ``{:?}``", field.get_data::<str>() );
+    let mut raw_bib: String = "".to_string();
+
+    for subfield in field.subfield( Identifier::from(bib_subfield_bib_identifier) ).iter() {
+        raw_bib = format!( "{}", subfield.get_data::<str>() );
+        // println!( "bib_subfield, ``{}``", subfield.get_data::<str>() );
+        // println!("bib_subfield, ``{:?}``", raw_bib );
+        // let bib_url: String = make_bib_url( )
+    }
+
+    // make_bib_url( &raw_bib );
+    let bib_url: String = make_bib_url( &raw_bib );
+
+    bib_url
+
+}
+
+
+fn make_bib_url( raw_bib: &str ) -> String {
+    let end: usize = raw_bib.len();
+    // println!("end, ``{:?}``", end );
+    let start: usize = 1;
+    let bib_a: String = ( &raw_bib[start..end ]).to_string();
+    // println!("bib_a, ``{:?}``", bib_a );
+
+    let end_2: usize = &bib_a.len() - 1;
+    let start_2: usize = 0;
+    let bib_b: String = ( &bib_a[start_2..end_2 ]).to_string();
+
+    // let bib_url: String = "foo".to_string();
+    let bib_url: String = format!( "https://search.library.brown.edu/catalog/{}", &bib_b );
+    // println!( "bib_url, ``{:?}``", bib_url );
+    bib_url
 }

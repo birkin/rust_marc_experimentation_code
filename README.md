@@ -14,10 +14,9 @@
     √ implement same in python
     √ add async to rust
     --> works from compiled version; panics from 'run' -- investigate
-        - go through stack-trace
-        - make clear example in `exp08b_async_troubleshoot` and post question
-            --> about to implement expensive_computation() sample (without marc library)
-            --> try to repeat overflow, then take things away.
+        √ go through stack-trace -- can't see the problem from that
+        --> upgrade to current version of rust and tokio and see if issue still happens
+        - make simplest clear example in `exp08b_async_troubleshoot` and, if no answers, post question
     - add async to python
 
 - eventually...
