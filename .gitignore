@@ -3,3 +3,4 @@ env
 source_files
 target
 output.txt
+output*.txt
