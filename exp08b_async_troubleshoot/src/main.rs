@@ -67,7 +67,8 @@ async fn main() -> io::Result<()> {
     let (tx, mut rx) = mpsc::channel( 100 );
     for marc_filepath in marc_filepaths {  // marc_filepath type-check yields: found struct `std::string::String`
         println!( "marc_filepath, ``{:?}``", marc_filepath );
-        let mut tx = tx.clone();
+        // let mut tx = tx.clone();
+        let tx_cl = tx.clone();
 
         let inner_title_field_tag = title_field_tag.to_string();
         let inner_title_subfield_main_identifier = title_subfield_main_identifier.to_string();
@@ -76,7 +77,7 @@ async fn main() -> io::Result<()> {
         let inner_bib_subfield_bib_identifier = bib_subfield_bib_identifier.to_string();
 
         tokio::spawn( async move {
-            let text_to_write: String = expensive_computation(
+            let text_to_write: String = process_marc_file(
                 &marc_filepath,
                 &inner_title_field_tag,
                 &inner_title_subfield_main_identifier,
@@ -85,7 +86,7 @@ async fn main() -> io::Result<()> {
                 &inner_bib_subfield_bib_identifier,
                 first_start_time
                 ).await;
-            tx.send( text_to_write ).await.unwrap_or_else( |err| {
+            tx_cl.send( text_to_write ).await.unwrap_or_else( |err| {
                 panic!( "problem sending on the transmit-end; error, ``{:?}``", err );
             } );
         } );
@@ -101,12 +102,16 @@ async fn main() -> io::Result<()> {
         write_to_file( &fappend, &text_to_write )
     }
 
+    println!("\n-------");
+    let all_files_duration_in_minutes: f32 = first_start_time.elapsed().as_secs_f32() / 60.0;
+    println!( "{}", format!("\nall-files-elapsed-time, ``{:?}`` minutes\n", all_files_duration_in_minutes) );
+
     Ok( () )
 
 }  // end async fn main()...
 
 
-async fn expensive_computation(
+async fn process_marc_file(
     marc_filepath: &str,
     inner_title_field_tag: &str,
     inner_title_subfield_main_identifier: &str,
@@ -116,6 +121,8 @@ async fn expensive_computation(
     _first_start_time: time::Instant
     ) -> String {
 
+    println!( "file being processed, ``{:?}``", marc_filepath);
+
     let _file_start_time = time::Instant::now();
 
     // -- load file into marc-reader
@@ -124,11 +131,12 @@ async fn expensive_computation(
     // -- process records
     let mut text_to_write: String = "".to_string();
     let mut _counter: i32 = 0;
-    for _n in 1..=1000 {
-        _counter += 1;
-        text_to_write = format!( "{}; {}", &_counter, &text_to_write );
-    }
+    // for _n in 1..=1000 {
+    //     _counter += 1;
+    //     text_to_write = format!( "{}; {}", &_counter, &text_to_write );
+    // }
     for rec in marc_records.iter() {  // yields: `&marc::Record<'_>`
+        println!( "processing record, ``{:?}`` in file, ``{:?}``", &_counter, &marc_filepath );
         let mut title: String = "".to_string();
         let mut bib: String = "".to_string();
         // println!("\nnew record...");
@@ -146,6 +154,8 @@ async fn expensive_computation(
 
         _counter += 1;
     }
+
+    println!( "FINISHED processing file, ``{:?}``; about to write string", &marc_filepath );
 
     text_to_write
 }

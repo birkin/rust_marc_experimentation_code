@@ -1,6 +1,7 @@
 .DS_Store
 env
-source_files
-target
-output.txt
 output*.txt
+output.txt
+source_files
+source_files*
+target
