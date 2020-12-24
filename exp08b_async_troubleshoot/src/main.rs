@@ -132,7 +132,7 @@ async fn process_marc_file(
     // let mut text_to_write: String = "".to_string();
     // let text_to_write: String;
 
-    let mut _counter: i32 = 0;
+    let mut _counter: i32 = 1;
     // for _n in 1..=1000 {
     //     _counter += 1;
     //     text_to_write = format!( "{}; {}", &_counter, &text_to_write );
@@ -141,7 +141,7 @@ async fn process_marc_file(
     let mut text_holder: Vec<String> = Vec::new();
 
     for rec in marc_records.iter() {  // yields: `&marc::Record<'_>`
-        println!( "processing record, ``{:?}`` in file, ``{:?}``", &_counter, &marc_filepath );
+        // println!( "processing record, ``{:?}`` in file, ``{:?}``", &_counter, &marc_filepath );
         let mut title: String = "".to_string();
         let mut bib: String = "".to_string();
         // println!("\nnew record...");
