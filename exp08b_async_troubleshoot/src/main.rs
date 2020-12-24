@@ -129,12 +129,17 @@ async fn process_marc_file(
     let marc_records: Vec<marc::Record> = load_records( marc_filepath );
 
     // -- process records
-    let mut text_to_write: String = "".to_string();
+    // let mut text_to_write: String = "".to_string();
+    // let text_to_write: String;
+
     let mut _counter: i32 = 0;
     // for _n in 1..=1000 {
     //     _counter += 1;
     //     text_to_write = format!( "{}; {}", &_counter, &text_to_write );
     // }
+
+    let mut text_holder: Vec<String> = Vec::new();
+
     for rec in marc_records.iter() {  // yields: `&marc::Record<'_>`
         println!( "processing record, ``{:?}`` in file, ``{:?}``", &_counter, &marc_filepath );
         let mut title: String = "".to_string();
@@ -149,14 +154,19 @@ async fn process_marc_file(
             bib = process_bib( field, inner_bib_subfield_bib_identifier );
         }
 
-        text_to_write = format!( "{}\n{}\n\n{}", &title, &bib, text_to_write  );
-        // text_to_write = format!( "title, ``{}``; bib, ``{}``", &title, &bib  );
+        // update text_holder
+        text_holder.push( title );
+        text_holder.push( bib );
+        text_holder.push( "".to_string() );
 
         _counter += 1;
     }
 
-    println!( "FINISHED processing file, ``{:?}``; about to write string", &marc_filepath );
+    println!( "FINISHED processing file, ``{:?}``; ``{}`` records; about to write string", &marc_filepath, &text_holder.len() );
+    // thx internet! <https://stackoverflow.com/questions/36941851/whats-an-idiomatic-way-to-print-an-iterator-separated-by-spaces-in-rust>
+    let text_to_write: String = text_holder.join( "\n" );
 
+    // println!( "text_to_write, ``{:?}``", &text_to_write);
     text_to_write
 }
 
