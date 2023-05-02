@@ -1,0 +1,11 @@
+[package]
+name = "exp02b_read_marcxml_file"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+log = "0.4.17"
+marc = "3.1.0"
+simple_logger = "4.1.0"
