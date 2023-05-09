@@ -17,7 +17,8 @@ use marc::{Field, Record, Subfield, Tag};
 fn main() {
 
     // -- init logging
-    SimpleLogger::new().init().unwrap();  // or, to set the mininum level: ```SimpleLogger::new().with_level(log::LevelFilter::Info).init().unwrap();```
+    // SimpleLogger::new().init().unwrap();  // or, to set the mininum level: ```SimpleLogger::new().with_level(log::LevelFilter::Info).init().unwrap();```
+    SimpleLogger::new().with_level(log::LevelFilter::Debug).init().unwrap();
     
     // -- get marc file path
     let marc_xml_path: String = "./source_files/sample_bibs_2022050222_7532401250006966_new_99.xml".to_string();
@@ -25,7 +26,8 @@ fn main() {
         
     // -- load
     let marc_records: Vec<marc::Record> = load_records( &marc_xml_path );
-    debug!("first marc_record, ``{:?}``", marc_records[0]);
+    // debug!("first marc_record, ``{:?}``", marc_records[0]);
+    // debug!("marc_records, ``{:?}``", marc_records);
 
 
     info!("end of main()");
@@ -33,6 +35,10 @@ fn main() {
 
 
 fn load_records( marc_xml_path: &str ) -> Vec< marc::Record<'static> > {
+
+    /*
+        I believe the reason I need the `'static` 
+     */
 
     // -- create the return Vec
     let mut result_vector: Vec<marc::Record> = Vec::new();
@@ -49,13 +55,15 @@ fn load_records( marc_xml_path: &str ) -> Vec< marc::Record<'static> > {
     reader.read_to_string(&mut contents).unwrap_or_else( |err| {
         panic!("could not read the file; error, ``{}``", err);
     });
+    // debug!("contents, ``{:?}``", contents);
 
     // -- Deserialize the XML into a Collection
     // let collection: Collection = serde_xml_rs::from_str(&contents)?;
     let collection: Collection = serde_xml_rs::from_str(&contents).unwrap_or_else( |err| {
         panic!("could not deserialize the marc_xml; error, ``{}``", err);
     });
-    debug!("collection, ``{:?}``", collection);
+    // let zz: () = collection;
+    // debug!("collection, ``{:?}``", collection);
 
     return result_vector;
 }
@@ -122,7 +130,8 @@ struct SubField {
     #[serde(rename = "code")]
     code: String,
     #[serde(rename = "$value")]
-    value: String,
+    // value: String,
+    value: Option<String>,
 }
 
 
