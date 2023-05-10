@@ -21,7 +21,8 @@ fn main() {
     SimpleLogger::new().with_level(log::LevelFilter::Debug).init().unwrap();
     
     // -- get marc file path
-    let marc_xml_path: String = "./source_files/sample_bibs_2022050222_7532401250006966_new_99.xml".to_string();
+    // let marc_xml_path: String = "./source_files/sample_bibs_2022050222_7532401250006966_new_99.xml".to_string();
+    let marc_xml_path: String = "./source_files/Incremental_set_wcollection_bibs_20230303031312.xml".to_string();
     debug!( "marc_xml_path, ``{:?}``", marc_xml_path);
         
     // -- load
@@ -63,7 +64,7 @@ fn load_records( marc_xml_path: &str ) -> Vec< marc::Record<'static> > {
         panic!("could not deserialize the marc_xml; error, ``{}``", err);
     });
     // let zz: () = collection;
-    // debug!("collection, ``{:?}``", collection);
+    debug!("collection, ``{:?}``", collection);
 
     return result_vector;
 }
