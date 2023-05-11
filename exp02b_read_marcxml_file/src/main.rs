@@ -18,14 +18,14 @@ fn main() {
         .init()
         .unwrap();
 
-    // -- get marc file path
+    // -- set marc file path
     // let marc_xml_path: String =
     //     "./source_files/Incremental_set_bibs_20230303031312.xml".to_string();
     let marc_xml_path: String =
         "./source_files/Incremental_set_wcollection_bibs_20230303031312.xml".to_string();
     debug!("marc_xml_path, ``{:?}``", marc_xml_path);
 
-    // -- load
+    // -- load xml
     let marc_records: Vec<marc::Record> = load_records(&marc_xml_path);
     // debug!("first marc_record, ``{:?}``", marc_records[0]);
     debug!("marc_records, ``{:?}``", marc_records);
@@ -56,7 +56,6 @@ fn load_records(marc_xml_path: &str) -> Vec<marc::Record<'static>> {
     // debug!("contents, ``{:?}``", contents);
 
     // -- Deserialize the XML into a Collection
-    // let collection: Collection = serde_xml_rs::from_str(&contents)?;
     let collection: Collection = serde_xml_rs::from_str(&contents).unwrap_or_else(|err| {
         panic!("could not deserialize the marc_xml; error, ``{}``", err);
     });
@@ -64,57 +63,8 @@ fn load_records(marc_xml_path: &str) -> Vec<marc::Record<'static>> {
     // debug!("collection, ``{:?}``", collection);
     debug!("collection.records, ``{:?}``", collection.records);
 
-    // -- build the marc::Record objects
-    // for record_xml in collection.records {
-    //     let mut marc_record = marc::Record::new();
-    //     for datafield in record_xml.datafields {
-    //         let mut marc_field = marc::Field::new(datafield.tag.as_str());
-    //         marc_field.set_indicator1(datafield.ind1.as_str());
-    //         marc_field.set_indicator2(datafield.ind2.as_str());
-    //         for subfield in datafield.subfields {
-    //             marc_field.add_subfield(marc::Subfield::new(
-    //                 subfield.code.as_str(),
-    //                 subfield.value.unwrap_or_else(|| "".to_string()).as_str(),
-    //             ));
-    //         }
-    //         marc_record.append(marc_field);
-    //     }
-    //     result_vector.push(marc_record);
-    // }
-
     return result_vector;
 }
-
-// -- load marc records from marc-xml file
-// fn load_records( file_path: &str ) -> Vec< marc::Record<'static> > {
-
-//     // create the return Vec
-//     let mut result_vector: Vec<marc::Record> = Vec::new();
-
-//     // create path-object to pass to file-handler
-//     let path = Path::new( file_path );
-//     let error_path_display = path.display();
-
-//     // access the file
-//     let file = match File::open(&path) {
-//         Err(why) => panic!( "Couldn't open {}: {}", error_path_display, why.to_string() ),
-//         Ok(file) => file,
-//     };
-
-//     // create a buffered reader
-//     let reader = BufReader::new(file);
-
-//     // iterate over the lines
-//     for line in reader.lines() {
-//         let line = line.unwrap();
-//         let marc_record: Record = from_reader(line.as_bytes()).unwrap();
-//         result_vector.push( marc_record );
-//     }
-
-//     // return the Vec
-//     result_vector
-
-// }  // end of load_records()
 
 // -- Define structs to represent MARC XML structure
 #[derive(Debug, Deserialize)]
@@ -150,7 +100,29 @@ struct SubField {
     value: Option<String>,
 }
 
+/* ----- Scratch work... ----- */
+
 // -- error syntax reminder
 // let paths: glob::Paths = glob( &pattern ).unwrap_or_else( |err| {
 //     panic!("could not glob the pattern; error, ``{}``", err);
 // });
+
+// let zz: () = collection;
+
+// -- build the marc::Record objects
+// for record_xml in collection.records {
+//     let mut marc_record = marc::Record::new();
+//     for datafield in record_xml.datafields {
+//         let mut marc_field = marc::Field::new(datafield.tag.as_str());
+//         marc_field.set_indicator1(datafield.ind1.as_str());
+//         marc_field.set_indicator2(datafield.ind2.as_str());
+//         for subfield in datafield.subfields {
+//             marc_field.add_subfield(marc::Subfield::new(
+//                 subfield.code.as_str(),
+//                 subfield.value.unwrap_or_else(|| "".to_string()).as_str(),
+//             ));
+//         }
+//         marc_record.append(marc_field);
+//     }
+//     result_vector.push(marc_record);
+// }
