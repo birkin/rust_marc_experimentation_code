@@ -26,20 +26,14 @@ fn main() {
     debug!("marc_xml_path, ``{:?}``", marc_xml_path);
 
     // -- load xml
-    let marc_records: Vec<marc::Record> = load_records(&marc_xml_path);
+    let marc_records: Collection = load_records(&marc_xml_path);
     // debug!("first marc_record, ``{:?}``", marc_records[0]);
-    debug!("marc_records, ``{:?}``", marc_records);
+    // debug!("marc_records, ``{:?}``", marc_records);
 
     info!("end of main()");
 }
 
-fn load_records(marc_xml_path: &str) -> Vec<marc::Record<'static>> {
-    /*
-       I believe the reason I need the `'static`
-    */
-
-    // -- create the return Vec
-    let mut result_vector: Vec<marc::Record> = Vec::new();
+fn load_records(marc_xml_path: &str) -> Collection {
 
     // -- Read the MARC XML file
     // let file = File::open(marc_xml_path)?;
@@ -59,11 +53,10 @@ fn load_records(marc_xml_path: &str) -> Vec<marc::Record<'static>> {
     let collection: Collection = serde_xml_rs::from_str(&contents).unwrap_or_else(|err| {
         panic!("could not deserialize the marc_xml; error, ``{}``", err);
     });
-    // let zz: () = collection;
     // debug!("collection, ``{:?}``", collection);
     debug!("collection.records, ``{:?}``", collection.records);
 
-    return result_vector;
+    return collection;
 }
 
 // -- Define structs to represent MARC XML structure
