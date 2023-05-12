@@ -1,4 +1,4 @@
-use marc::{Field, Record, Subfield, Tag};
+// use marc::{Field, Record, Subfield, Tag};
 // use marc::*;
 // use marc::Record;
 // use serde_xml_rs::from_reader;
@@ -27,14 +27,12 @@ fn main() {
 
     // -- load xml
     let marc_records: Collection = load_records(&marc_xml_path);
-    // debug!("first marc_record, ``{:?}``", marc_records[0]);
-    // debug!("marc_records, ``{:?}``", marc_records);
+    debug!("first marc_record, ``{:?}``", marc_records.records[0]);
 
     info!("end of main()");
 }
 
 fn load_records(marc_xml_path: &str) -> Collection {
-
     // -- Read the MARC XML file
     // let file = File::open(marc_xml_path)?;
     let file = File::open(marc_xml_path).unwrap_or_else(|err| {
@@ -53,8 +51,12 @@ fn load_records(marc_xml_path: &str) -> Collection {
     let collection: Collection = serde_xml_rs::from_str(&contents).unwrap_or_else(|err| {
         panic!("could not deserialize the marc_xml; error, ``{}``", err);
     });
-    // debug!("collection, ``{:?}``", collection);
-    debug!("collection.records, ``{:?}``", collection.records);
+    let collection_str = format!("{:?}", collection);
+
+    // -- log the collection
+    let collection_substr_ellipses =
+        format!("{}...", &collection_str[..collection_str.len().min(200)]);
+    debug!("collection (partial), ``{:?}``", collection_substr_ellipses);
 
     return collection;
 }
