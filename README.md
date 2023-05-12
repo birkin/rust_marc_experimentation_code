@@ -1,38 +1,12 @@
+next -- look through marc-xml files for a bibnum.
 
-- next...
-    √ add comments to each step of exp02_read_marc_file load_records()
-    √ pull out bib and/or item-number also.
-        √  see marc_cli query.rs query_subfield() to grok and implement getting at sub-fields
-        √ issue to consider: logic needed to ultimately present good title; i.e. subfield 'b' looks like a subtitle that should reasonably be included in the title.
-    √ print bib-url
-    √ disable extraneous print statements.
-    √ refactor
-        x iterate throught the subfields once, pulling out the main-title and remainder and printing them -- later
-        √ perform logic out of main()
-    √ process a directory instead of file directly.
-    √ add individual-file and total timing
-    √ implement same in python
-    √ add async to rust
-    --> works from compiled version; panics from 'run' -- investigate
-        √ go through stack-trace -- can't see the problem from that
-        --> upgrade to current version of rust and tokio and see if issue still happens
-        - make simplest clear example in `exp08b_async_troubleshoot` and, if no answers, post question
-    - add async to python
+exploring xml for:
+<https://bruknow.library.brown.edu/permalink/01BU_INST/9mvq88/alma991043515515806966>
 
-- eventually...
-    - consider appending output to a file instead of storing all data in memory.
-    - play w/tokio, certainly to process multiple files...
-        - but even possibly to process parts of a file.
+for previous bib work, see:
+`bib_redirect_stuff/bib_redirect_code/bib_redirector`
 
----
-
-- goal play:
-    - first, to load a file of marc-records, and create a list of titles.
-    - then, to do the same for a path to a directory of marc files.
-
-- flow...
-    - played around with rust-marc but was having trouble pulling out specific data.
-    - so am now experimenting with how marc_cli calls rust-marc.
+looks like a standard bib is b1234567, and b12345678 with a check-digit ('8' there isn't algorithmically correct).
 
 ---
 
