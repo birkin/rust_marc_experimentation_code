@@ -27,7 +27,7 @@ fn main() {
 
     // -- load xml
     let marc_records: Collection = load_records(&marc_xml_path);
-    debug!("first marc_record, ``{:?}``", marc_records.records[0]);
+    // debug!("first marc_record, ``{:?}``", marc_records.records[0]);
 
     info!("end of main()");
 }
@@ -51,9 +51,9 @@ fn load_records(marc_xml_path: &str) -> Collection {
     let collection: Collection = serde_xml_rs::from_str(&contents).unwrap_or_else(|err| {
         panic!("could not deserialize the marc_xml; error, ``{}``", err);
     });
-    let collection_str = format!("{:?}", collection);
 
     // -- log the collection
+    let collection_str = format!("{:?}", collection);
     let collection_substr_ellipses =
         format!("{}...", &collection_str[..collection_str.len().min(200)]);
     debug!("collection (partial), ``{:?}``", collection_substr_ellipses);
@@ -61,7 +61,19 @@ fn load_records(marc_xml_path: &str) -> Collection {
     return collection;
 }
 
-// -- Define structs to represent MARC XML structure
+// ------------------------------------------------------------------
+// -- Simple-item struct --------------------------------------------
+
+struct Item {
+    alma_mmsid: String,
+    bibnum: String,
+    title: String,
+    author: String,
+}
+
+// ------------------------------------------------------------------
+// -- Structs to represent MARC XML structure -----------------------
+
 #[derive(Debug, Deserialize)]
 struct Collection {
     #[serde(rename = "record", default)]
@@ -95,7 +107,8 @@ struct SubField {
     value: Option<String>,
 }
 
-/* ----- Scratch work... ----- */
+// ------------------------------------------------------------------
+// -- Scratch work --------------------------------------------------
 
 // -- error syntax reminder
 // let paths: glob::Paths = glob( &pattern ).unwrap_or_else( |err| {
