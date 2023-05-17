@@ -29,8 +29,71 @@ fn main() {
     let marc_records: Collection = load_records(&marc_xml_path);
     // debug!("first marc_record, ``{:?}``", marc_records.records[0]);
 
+    // -- list titles
+    display_titles(&marc_records);
+
     info!("end of main()");
 }
+
+fn display_titles(marc_records: &Collection) {
+    for record in &marc_records.records {
+        let mut title = String::new();
+        for datafield in &record.datafields {
+            if datafield.tag == "245" {
+                for subfield in &datafield.subfields {
+                    if subfield.code == "a" {
+                        title = subfield.value.clone().unwrap_or_else(|| "".to_string());
+                        // title explanation: <https://gist.github.com/birkin/57952fa4052167ddb8b5c98ec8beb920>
+                    }
+                }
+            }
+        }
+        println!("title, ``{:?}``", title);
+    }
+}
+
+// fn display_titles(marc_records: Collection) {
+//     for record in marc_records.records {
+//         let mut title = String::new();
+//         let mut author = String::new();
+//         let mut alma_mmsid = String::new();
+//         let mut bibnum = String::new();
+//         for datafield in record.datafields {
+//             if datafield.tag == "245" {
+//                 for subfield in &datafield.subfields {
+//                     if subfield.code == "a" {
+//                         title = subfield.value.as_ref().unwrap_or_else(|| "".to_string());
+//                     }
+//                 }
+//             }
+//             if datafield.tag == "100" {
+//                 for subfield in datafield.subfields {
+//                     if subfield.code == "a" {
+//                         author = subfield.value.unwrap_or_else(|| "".to_string());
+//                     }
+//                 }
+//             }
+//             if datafield.tag == "001" {
+//                 for subfield in datafield.subfields {
+//                     if subfield.code == "a" {
+//                         alma_mmsid = subfield.value.unwrap_or_else(|| "".to_string());
+//                     }
+//                 }
+//             }
+//             if datafield.tag == "907" {
+//                 for subfield in datafield.subfields {
+//                     if subfield.code == "a" {
+//                         bibnum = subfield.value.unwrap_or_else(|| "".to_string());
+//                     }
+//                 }
+//             }
+//         }
+//         println!(
+//             "title, ``{:?}``; author, ``{:?}``; alma_mmsid, ``{:?}``; bibnum, ``{:?}``",
+//             title, author, alma_mmsid, bibnum
+//         );
+//     }
+// }
 
 fn load_records(marc_xml_path: &str) -> Collection {
     // -- Read the MARC XML file
