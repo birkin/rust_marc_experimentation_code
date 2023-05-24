@@ -34,51 +34,125 @@ fn main() {
 
     // -- iterate through records
     for record in &marc_records.records {
-        let mut title = String::new();
-        let mut author = String::new();
-        let mut alma_mmsid = String::new();
-        let mut bibnum = String::new();
-        for datafield in &record.datafields {
-            if datafield.tag == "245" {
-                for subfield in &datafield.subfields {
-                    if subfield.code == "a" {
-                        title = subfield.value.clone().unwrap_or_else(|| "".to_string());
-                        // title explanation: <https://gist.github.com/birkin/57952fa4052167ddb8b5c98ec8beb920>
-                    }
-                }
-            }
-            if datafield.tag == "100" {
-                for subfield in &datafield.subfields {
-                    if subfield.code == "a" {
-                        author = subfield.value.clone().unwrap_or_else(|| "".to_string());
-                    }
-                }
-            }
-            if datafield.tag == "001" {
-                for subfield in &datafield.subfields {
-                    if subfield.code == "a" {
-                        alma_mmsid = subfield.value.clone().unwrap_or_else(|| "".to_string());
-                    }
-                }
-            }
-            if datafield.tag == "907" {
-                for subfield in &datafield.subfields {
-                    if subfield.code == "a" {
-                        bibnum = subfield.value.clone().unwrap_or_else(|| "".to_string());
-                    }
-                }
-            }
-        }
-        println!(
-            "title, ``{:?}``; author, ``{:?}``; alma_mmsid, ``{:?}``; bibnum, ``{:?}``",
-            title, author, alma_mmsid, bibnum
-        );
+        process_record(&record)
     }
 
     // }
 
     info!("end of main()");
 }
+
+fn process_record(record: &RecordXml) {
+    let mut title = String::new();
+    let mut author = String::new();
+    let mut alma_mmsid = String::new();
+    let mut bibnum = String::new();
+    for datafield in &record.datafields {
+        if datafield.tag == "245" {
+            for subfield in &datafield.subfields {
+                if subfield.code == "a" {
+                    title = subfield.value.clone().unwrap_or_else(|| "".to_string());
+                    // title explanation: <https://gist.github.com/birkin/57952fa4052167ddb8b5c98ec8beb920>
+                }
+            }
+        }
+        if datafield.tag == "100" {
+            for subfield in &datafield.subfields {
+                if subfield.code == "a" {
+                    author = subfield.value.clone().unwrap_or_else(|| "".to_string());
+                }
+            }
+        }
+        if datafield.tag == "001" {
+            for subfield in &datafield.subfields {
+                if subfield.code == "a" {
+                    alma_mmsid = subfield.value.clone().unwrap_or_else(|| "".to_string());
+                }
+            }
+        }
+        if datafield.tag == "907" {
+            for subfield in &datafield.subfields {
+                if subfield.code == "a" {
+                    bibnum = subfield.value.clone().unwrap_or_else(|| "".to_string());
+                }
+            }
+        }
+    }
+    println!(
+        "title, ``{:?}``; author, ``{:?}``; alma_mmsid, ``{:?}``; bibnum, ``{:?}``",
+        title, author, alma_mmsid, bibnum
+    );
+}
+
+// fn main() {
+//     // -- init logging
+//     // SimpleLogger::new().init().unwrap();  // or, to set the mininum level: ```SimpleLogger::new().with_level(log::LevelFilter::Info).init().unwrap();```
+//     SimpleLogger::new()
+//         .with_level(log::LevelFilter::Debug)
+//         .init()
+//         .unwrap();
+
+//     // -- set marc file path
+//     // let marc_xml_path: String =
+//     //     "./source_files/Incremental_set_bibs_20230303031312.xml".to_string();
+//     let marc_xml_path: String =
+//         "./source_files/Incremental_set_wcollection_bibs_20230303031312.xml".to_string();
+//     debug!("marc_xml_path, ``{:?}``", marc_xml_path);
+
+//     // -- load xml
+//     let marc_records: Collection = load_records(&marc_xml_path);
+//     // debug!("first marc_record, ``{:?}``", marc_records.records[0]);
+
+//     // -- list titles
+//     // display_titles(&marc_records);
+
+//     // -- iterate through records
+//     for record in &marc_records.records {
+//         let mut title = String::new();
+//         let mut author = String::new();
+//         let mut alma_mmsid = String::new();
+//         let mut bibnum = String::new();
+//         for datafield in &record.datafields {
+//             if datafield.tag == "245" {
+//                 for subfield in &datafield.subfields {
+//                     if subfield.code == "a" {
+//                         title = subfield.value.clone().unwrap_or_else(|| "".to_string());
+//                         // title explanation: <https://gist.github.com/birkin/57952fa4052167ddb8b5c98ec8beb920>
+//                     }
+//                 }
+//             }
+//             if datafield.tag == "100" {
+//                 for subfield in &datafield.subfields {
+//                     if subfield.code == "a" {
+//                         author = subfield.value.clone().unwrap_or_else(|| "".to_string());
+//                     }
+//                 }
+//             }
+//             if datafield.tag == "001" {
+//                 for subfield in &datafield.subfields {
+//                     if subfield.code == "a" {
+//                         alma_mmsid = subfield.value.clone().unwrap_or_else(|| "".to_string());
+//                     }
+//                 }
+//             }
+//             if datafield.tag == "907" {
+//                 for subfield in &datafield.subfields {
+//                     if subfield.code == "a" {
+//                         bibnum = subfield.value.clone().unwrap_or_else(|| "".to_string());
+//                     }
+//                 }
+//             }
+//         }
+//         println!(
+//             "title, ``{:?}``; author, ``{:?}``; alma_mmsid, ``{:?}``; bibnum, ``{:?}``",
+//             title, author, alma_mmsid, bibnum
+//         );
+//     }
+
+//     // }
+
+//     info!("end of main()");
+// }
 
 // fn display_titles(marc_records: &Collection) {
 //     for record in &marc_records.records {
