@@ -1,8 +1,9 @@
 # next
 
-- title always seems to be 245/a.
+- run parse-functions concurrently
 
-- research the different possibilities for the author from info below.
+- get mmsid from marcxml
+
 
 ---
 
