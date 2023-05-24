@@ -12,15 +12,12 @@ use std::io::Read;
 
 fn main() {
     // -- init logging
-    // SimpleLogger::new().init().unwrap();  // or, to set the mininum level: ```SimpleLogger::new().with_level(log::LevelFilter::Info).init().unwrap();```
     SimpleLogger::new()
         .with_level(log::LevelFilter::Debug)
         .init()
         .unwrap();
 
     // -- set marc file path
-    // let marc_xml_path: String =
-    //     "./source_files/Incremental_set_bibs_20230303031312.xml".to_string();
     let marc_xml_path: String =
         "./source_files/Incremental_set_wcollection_bibs_20230303031312.xml".to_string();
     debug!("marc_xml_path, ``{:?}``", marc_xml_path);
@@ -34,22 +31,14 @@ fn main() {
         process_record(&record)
     }
 
-    // }
-
     info!("end of main()");
 }
 
 fn process_record(record: &RecordXml) {
-    // let mut title = String::new();
-    // let mut author = String::new();
-    // let mut alma_mmsid = String::new();
-    // let mut bibnum = String::new();
-
     let title: String = parse_title(&record);
     let author: String = parse_author(&record);
     let alma_mmsid: String = parse_alma_mmsid(&record);
     let bibnum: String = parse_bibnum(&record);
-
     println!(
         "title, ``{:?}``; author, ``{:?}``; alma_mmsid, ``{:?}``; bibnum, ``{:?}``",
         title, author, alma_mmsid, bibnum
@@ -113,108 +102,6 @@ fn parse_author(record: &RecordXml) -> String {
     author
 }
 
-// fn process_record(record: &RecordXml) {
-//     let mut title = String::new();
-//     let mut author = String::new();
-//     let mut alma_mmsid = String::new();
-//     let mut bibnum = String::new();
-//     for datafield in &record.datafields {
-//         if datafield.tag == "245" {
-//             for subfield in &datafield.subfields {
-//                 if subfield.code == "a" {
-//                     title = subfield.value.clone().unwrap_or_else(|| "".to_string());
-//                     // title explanation: <https://gist.github.com/birkin/57952fa4052167ddb8b5c98ec8beb920>
-//                 }
-//             }
-//         }
-//         if datafield.tag == "100" {
-//             for subfield in &datafield.subfields {
-//                 if subfield.code == "a" {
-//                     author = subfield.value.clone().unwrap_or_else(|| "".to_string());
-//                 }
-//             }
-//         }
-//         if datafield.tag == "001" {
-//             for subfield in &datafield.subfields {
-//                 if subfield.code == "a" {
-//                     alma_mmsid = subfield.value.clone().unwrap_or_else(|| "".to_string());
-//                 }
-//             }
-//         }
-//         if datafield.tag == "907" {
-//             for subfield in &datafield.subfields {
-//                 if subfield.code == "a" {
-//                     bibnum = subfield.value.clone().unwrap_or_else(|| "".to_string());
-//                 }
-//             }
-//         }
-//     }
-//     println!(
-//         "title, ``{:?}``; author, ``{:?}``; alma_mmsid, ``{:?}``; bibnum, ``{:?}``",
-//         title, author, alma_mmsid, bibnum
-//     );
-// }
-
-// fn display_titles(marc_records: &Collection) {
-//     for record in &marc_records.records {
-//         let mut title = String::new();
-//         for datafield in &record.datafields {
-//             if datafield.tag == "245" {
-//                 for subfield in &datafield.subfields {
-//                     if subfield.code == "a" {
-//                         title = subfield.value.clone().unwrap_or_else(|| "".to_string());
-//                         // title explanation: <https://gist.github.com/birkin/57952fa4052167ddb8b5c98ec8beb920>
-//                     }
-//                 }
-//             }
-//         }
-//         println!("title, ``{:?}``", title);
-//     }
-// }
-
-// fn display_titles(marc_records: Collection) {
-//     for record in marc_records.records {
-//         let mut title = String::new();
-//         let mut author = String::new();
-//         let mut alma_mmsid = String::new();
-//         let mut bibnum = String::new();
-//         for datafield in record.datafields {
-//             if datafield.tag == "245" {
-//                 for subfield in &datafield.subfields {
-//                     if subfield.code == "a" {
-//                         title = subfield.value.as_ref().unwrap_or_else(|| "".to_string());
-//                     }
-//                 }
-//             }
-//             if datafield.tag == "100" {
-//                 for subfield in datafield.subfields {
-//                     if subfield.code == "a" {
-//                         author = subfield.value.unwrap_or_else(|| "".to_string());
-//                     }
-//                 }
-//             }
-//             if datafield.tag == "001" {
-//                 for subfield in datafield.subfields {
-//                     if subfield.code == "a" {
-//                         alma_mmsid = subfield.value.unwrap_or_else(|| "".to_string());
-//                     }
-//                 }
-//             }
-//             if datafield.tag == "907" {
-//                 for subfield in datafield.subfields {
-//                     if subfield.code == "a" {
-//                         bibnum = subfield.value.unwrap_or_else(|| "".to_string());
-//                     }
-//                 }
-//             }
-//         }
-//         println!(
-//             "title, ``{:?}``; author, ``{:?}``; alma_mmsid, ``{:?}``; bibnum, ``{:?}``",
-//             title, author, alma_mmsid, bibnum
-//         );
-//     }
-// }
-
 fn load_records(marc_xml_path: &str) -> Collection {
     // -- Read the MARC XML file
     // let file = File::open(marc_xml_path)?;
@@ -247,12 +134,12 @@ fn load_records(marc_xml_path: &str) -> Collection {
 // ------------------------------------------------------------------
 // -- Simple-item struct --------------------------------------------
 
-struct Item {
-    alma_mmsid: String,
-    bibnum: String,
-    title: String,
-    author: String,
-}
+// struct Item {
+//     alma_mmsid: String,
+//     bibnum: String,
+//     title: String,
+//     author: String,
+// }
 
 // ------------------------------------------------------------------
 // -- Structs to represent MARC XML structure -----------------------
