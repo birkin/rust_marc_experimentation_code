@@ -1,6 +1,8 @@
 # next
 
 - run parse-functions concurrently
+    - add other two parse functions to concurrent branch.
+    - time the sync and async code.
 
 - get mmsid from marcxml
 
