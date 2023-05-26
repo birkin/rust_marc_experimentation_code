@@ -10,7 +10,8 @@ use std::fs::File;
 use std::io::BufReader;
 use std::io::Read;
 
-fn main() {
+#[tokio::main]
+async fn main() {
     // -- init logging
     SimpleLogger::new()
         .with_level(log::LevelFilter::Debug)
@@ -28,50 +29,46 @@ fn main() {
 
     // -- iterate through records
     for record in &marc_records.records {
-        process_record(&record)
+        process_record(&record).await;
     }
 
     info!("end of main()");
 }
 
-fn process_record(record: &RecordXml) {
-    let title: String = parse_title(&record);
-    let author: String = parse_author(&record);
-    let alma_mmsid: String = parse_alma_mmsid(&record);
-    let bibnum: String = parse_bibnum(&record);
-    println!(
-        "title, ``{:?}``; author, ``{:?}``; alma_mmsid, ``{:?}``; bibnum, ``{:?}``",
-        title, author, alma_mmsid, bibnum
-    );
+async fn process_record(record: &RecordXml) {
+    let (title, author) = tokio::join!(parse_title_async(&record), parse_author_async(&record));
+    println!("title, ``{:?}``; author, ``{:?}``", title, author);
 }
 
-fn parse_bibnum(record: &RecordXml) -> String {
-    let mut bibnum = String::new();
+async fn parse_title_async(record: &RecordXml) -> String {
+    let mut title = String::new();
     for datafield in &record.datafields {
-        if datafield.tag == "907" {
+        if datafield.tag == "245" {
             for subfield in &datafield.subfields {
                 if subfield.code == "a" {
-                    bibnum = subfield.value.clone().unwrap_or_else(|| "".to_string());
+                    title = subfield.value.clone().unwrap_or_else(|| "".to_string());
                 }
             }
         }
     }
-    bibnum
+    title
 }
 
-fn parse_alma_mmsid(record: &RecordXml) -> String {
-    let mut alma_mmsid = String::new();
+async fn parse_author_async(record: &RecordXml) -> String {
+    let mut author = String::new();
     for datafield in &record.datafields {
-        if datafield.tag == "001" {
+        if datafield.tag == "100" {
             for subfield in &datafield.subfields {
                 if subfield.code == "a" {
-                    alma_mmsid = subfield.value.clone().unwrap_or_else(|| "".to_string());
+                    author = subfield.value.clone().unwrap_or_else(|| "".to_string());
                 }
             }
         }
     }
-    alma_mmsid
+    author
 }
+
+// ------------------------------------------------------------------
 
 fn parse_title(record: &RecordXml) -> String {
     let mut title = String::new();
@@ -100,6 +97,34 @@ fn parse_author(record: &RecordXml) -> String {
         }
     }
     author
+}
+
+fn parse_bibnum(record: &RecordXml) -> String {
+    let mut bibnum = String::new();
+    for datafield in &record.datafields {
+        if datafield.tag == "907" {
+            for subfield in &datafield.subfields {
+                if subfield.code == "a" {
+                    bibnum = subfield.value.clone().unwrap_or_else(|| "".to_string());
+                }
+            }
+        }
+    }
+    bibnum
+}
+
+fn parse_alma_mmsid(record: &RecordXml) -> String {
+    let mut alma_mmsid = String::new();
+    for datafield in &record.datafields {
+        if datafield.tag == "001" {
+            for subfield in &datafield.subfields {
+                if subfield.code == "a" {
+                    alma_mmsid = subfield.value.clone().unwrap_or_else(|| "".to_string());
+                }
+            }
+        }
+    }
+    alma_mmsid
 }
 
 fn load_records(marc_xml_path: &str) -> Collection {
