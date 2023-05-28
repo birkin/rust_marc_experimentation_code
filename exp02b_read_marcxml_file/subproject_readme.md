@@ -7,6 +7,42 @@
 
 ---
 
+
+# misc notes...
+
+## async experimentation
+
+(I love thinking about and experimenting with concurrency.)
+
+As an exercise, I'm going to write this single-threaded, but make all function-calls async (with awaits), to experiment with forcing myself to keep concurrency in the back of my mind. Also, I'll be curious to see whether I have to change any practices via the compiler. Then, hopefully, I can go back and implement concurrency where it would be beneficial.
+
+An initial version of this, compared to the version with no async references (run on the 10.000 item file), is a bit slower, but ok:
+
+- async definitions only: `./target/release/exp02b_read_marcxml_file  2.44s user 0.07s system 99% cpu 2.5355 total
+`
+
+- no async references: `./target/release/exp02b_read_marcxml_file  2.43s user 0.08s system 99% cpu 2.5285 total`
+
+
+## async experimentation -- other
+
+As an experiment, I tried making process-records async, [here](https://github.com/birkin/rust_marc_experimentation_code/blob/asyc_02b_try/exp02b_read_marcxml_file/src/main.rs#L40-L43).
+
+The overhead made it slower:
+
+- taking four runs, dropping the high and low, and averaging middle-two...
+
+- async:
+
+        ./target/release/exp02b_read_marcxml_file  2.50s user 0.07s system 99% cpu 2.6005 total
+
+- single-threaded:
+
+        ./target/release/exp02b_read_marcxml_file  2.43s user 0.08s system 99% cpu 2.5285 total
+
+---
+
+
 # author possibilities
 
 Attribution
