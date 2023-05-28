@@ -10,6 +10,11 @@ use std::fs::File;
 use std::io::BufReader;
 use std::io::Read;
 
+/*
+Just a note that this code isn't really async.
+I'm experimenting with keeping async present in my thinking; see the subproject_readme for more info.
+*/
+
 #[tokio::main]
 async fn main() {
     // -- init logging
