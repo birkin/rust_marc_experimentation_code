@@ -10,7 +10,8 @@ use std::fs::File;
 use std::io::BufReader;
 use std::io::Read;
 
-fn main() {
+#[tokio::main]
+async fn main() {
     // -- init logging
     SimpleLogger::new()
         .with_level(log::LevelFilter::Debug)
@@ -18,36 +19,37 @@ fn main() {
         .unwrap();
 
     // -- set marc file path
-    // let marc_xml_path: String =
-    //     "./source_files/Incremental_set_wcollection_bibs_20230303031312.xml".to_string();
     let marc_xml_path: String =
-        "./source_files/sample_bibs_2022050222_7532401250006966_new_99.xml".to_string(); // big file
+        "./source_files/Incremental_set_wcollection_bibs_20230303031312.xml".to_string(); // 42 records
+
+    // let marc_xml_path: String =
+    //     "./source_files/sample_bibs_2022050222_7532401250006966_new_99.xml".to_string(); // 10,000 records
     debug!("marc_xml_path, ``{:?}``", marc_xml_path);
 
     // -- load xml
-    let marc_records: Collection = load_records(&marc_xml_path);
+    let marc_records: Collection = load_records(&marc_xml_path).await;
     // debug!("first marc_record, ``{:?}``", marc_records.records[0]);
 
     // -- iterate through records
     for record in &marc_records.records {
-        process_record(&record)
+        process_record(&record).await;
     }
 
     info!("end of main()");
 }
 
-fn process_record(record: &RecordXml) {
-    let title: String = parse_title(&record);
-    let author: String = parse_author(&record);
-    let alma_mmsid: String = parse_alma_mmsid(&record);
-    let bibnum: String = parse_bibnum(&record);
+async fn process_record(record: &RecordXml) {
+    let title: String = parse_title(&record).await;
+    let author: String = parse_author(&record).await;
+    let alma_mmsid: String = parse_alma_mmsid(&record).await;
+    let bibnum: String = parse_bibnum(&record).await;
     println!(
         "title, ``{:?}``; author, ``{:?}``; alma_mmsid, ``{:?}``; bibnum, ``{:?}``",
         title, author, alma_mmsid, bibnum
     );
 }
 
-fn parse_bibnum(record: &RecordXml) -> String {
+async fn parse_bibnum(record: &RecordXml) -> String {
     let mut bibnum = String::new();
     for datafield in &record.datafields {
         if datafield.tag == "907" {
@@ -61,7 +63,7 @@ fn parse_bibnum(record: &RecordXml) -> String {
     bibnum
 }
 
-fn parse_alma_mmsid(record: &RecordXml) -> String {
+async fn parse_alma_mmsid(record: &RecordXml) -> String {
     let mut alma_mmsid = String::new();
     for datafield in &record.datafields {
         if datafield.tag == "001" {
@@ -75,7 +77,7 @@ fn parse_alma_mmsid(record: &RecordXml) -> String {
     alma_mmsid
 }
 
-fn parse_title(record: &RecordXml) -> String {
+async fn parse_title(record: &RecordXml) -> String {
     let mut title = String::new();
     for datafield in &record.datafields {
         if datafield.tag == "245" {
@@ -90,7 +92,7 @@ fn parse_title(record: &RecordXml) -> String {
     title
 }
 
-fn parse_author(record: &RecordXml) -> String {
+async fn parse_author(record: &RecordXml) -> String {
     let mut author = String::new();
     for datafield in &record.datafields {
         if datafield.tag == "100" {
@@ -104,7 +106,7 @@ fn parse_author(record: &RecordXml) -> String {
     author
 }
 
-fn load_records(marc_xml_path: &str) -> Collection {
+async fn load_records(marc_xml_path: &str) -> Collection {
     // -- Read the MARC XML file
     // let file = File::open(marc_xml_path)?;
     let file = File::open(marc_xml_path).unwrap_or_else(|err| {
