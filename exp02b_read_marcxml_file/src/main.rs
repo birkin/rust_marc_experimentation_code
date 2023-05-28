@@ -19,8 +19,10 @@ async fn main() {
         .unwrap();
 
     // -- set marc file path
+    // let marc_xml_path: String =
+    //     "./source_files/Incremental_set_wcollection_bibs_20230303031312.xml".to_string();
     let marc_xml_path: String =
-        "./source_files/Incremental_set_wcollection_bibs_20230303031312.xml".to_string();
+        "./source_files/sample_bibs_2022050222_7532401250006966_new_99.xml".to_string();  // big file
     debug!("marc_xml_path, ``{:?}``", marc_xml_path);
 
     // -- load xml
