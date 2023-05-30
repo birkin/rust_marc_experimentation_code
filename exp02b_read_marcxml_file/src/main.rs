@@ -26,9 +26,12 @@ fn main() {
     // debug!("first marc_record, ``{:?}``", marc_records.records[0]);
 
     // -- iterate through records
+
     // for record in marc_records.records.iter() {  // original syntax
     //     process_record(record);
     // }
+
+    /* rayon iteration syntax */
     marc_records.records.par_iter().for_each(|record| {
         process_record(record);
     });
