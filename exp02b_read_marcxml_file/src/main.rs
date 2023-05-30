@@ -10,6 +10,8 @@ use std::fs::File;
 use std::io::BufReader;
 use std::io::Read;
 
+use rayon::prelude::*;
+
 /*
 Just a note that this code isn't really async.
 I'm experimenting with keeping async present in my thinking; see the subproject_readme for more info.
@@ -24,11 +26,11 @@ async fn main() {
         .unwrap();
 
     // -- set marc file path
-    let marc_xml_path: String =
-        "./source_files/Incremental_set_wcollection_bibs_20230303031312.xml".to_string(); // 42 records
-
     // let marc_xml_path: String =
-    //     "./source_files/sample_bibs_2022050222_7532401250006966_new_99.xml".to_string(); // 10,000 records
+    //     "./source_files/Incremental_set_wcollection_bibs_20230303031312.xml".to_string(); // 42 records
+
+    let marc_xml_path: String =
+        "./source_files/sample_bibs_2022050222_7532401250006966_new_99.xml".to_string(); // 10,000 records
     debug!("marc_xml_path, ``{:?}``", marc_xml_path);
 
     // -- load xml
@@ -36,25 +38,43 @@ async fn main() {
     // debug!("first marc_record, ``{:?}``", marc_records.records[0]);
 
     // -- iterate through records
-    for record in &marc_records.records {
-        process_record(&record).await;
-    }
+    // for record in &marc_records.records {
+    //     process_record(&record).await;
+    // }
+    // for record in marc_records.records.iter() {
+    //     process_record(record).await;
+    // }
+    marc_records
+        .records
+        .par_iter()
+        .for_each(|record| process_record(record));
 
     info!("end of main()");
 }
 
-async fn process_record(record: &RecordXml) {
-    let title: String = parse_title(&record).await;
-    let author: String = parse_author(&record).await;
-    let alma_mmsid: String = parse_alma_mmsid(&record).await;
-    let bibnum: String = parse_bibnum(&record).await;
+fn process_record(record: &RecordXml) {
+    let title: String = parse_title(&record);
+    let author: String = parse_author(&record);
+    let alma_mmsid: String = parse_alma_mmsid(&record);
+    let bibnum: String = parse_bibnum(&record);
     println!(
         "title, ``{:?}``; author, ``{:?}``; alma_mmsid, ``{:?}``; bibnum, ``{:?}``",
         title, author, alma_mmsid, bibnum
     );
 }
 
-async fn parse_bibnum(record: &RecordXml) -> String {
+// async fn process_record(record: &RecordXml) {
+//     let title: String = parse_title(&record).await;
+//     let author: String = parse_author(&record).await;
+//     let alma_mmsid: String = parse_alma_mmsid(&record).await;
+//     let bibnum: String = parse_bibnum(&record).await;
+//     println!(
+//         "title, ``{:?}``; author, ``{:?}``; alma_mmsid, ``{:?}``; bibnum, ``{:?}``",
+//         title, author, alma_mmsid, bibnum
+//     );
+// }
+
+fn parse_bibnum(record: &RecordXml) -> String {
     let mut bibnum = String::new();
     for datafield in &record.datafields {
         if datafield.tag == "907" {
@@ -68,7 +88,21 @@ async fn parse_bibnum(record: &RecordXml) -> String {
     bibnum
 }
 
-async fn parse_alma_mmsid(record: &RecordXml) -> String {
+// async fn parse_bibnum(record: &RecordXml) -> String {
+//     let mut bibnum = String::new();
+//     for datafield in &record.datafields {
+//         if datafield.tag == "907" {
+//             for subfield in &datafield.subfields {
+//                 if subfield.code == "a" {
+//                     bibnum = subfield.value.clone().unwrap_or_else(|| "".to_string());
+//                 }
+//             }
+//         }
+//     }
+//     bibnum
+// }
+
+fn parse_alma_mmsid(record: &RecordXml) -> String {
     let mut alma_mmsid = String::new();
     for datafield in &record.datafields {
         if datafield.tag == "001" {
@@ -82,7 +116,21 @@ async fn parse_alma_mmsid(record: &RecordXml) -> String {
     alma_mmsid
 }
 
-async fn parse_title(record: &RecordXml) -> String {
+// async fn parse_alma_mmsid(record: &RecordXml) -> String {
+//     let mut alma_mmsid = String::new();
+//     for datafield in &record.datafields {
+//         if datafield.tag == "001" {
+//             for subfield in &datafield.subfields {
+//                 if subfield.code == "a" {
+//                     alma_mmsid = subfield.value.clone().unwrap_or_else(|| "".to_string());
+//                 }
+//             }
+//         }
+//     }
+//     alma_mmsid
+// }
+
+fn parse_title(record: &RecordXml) -> String {
     let mut title = String::new();
     for datafield in &record.datafields {
         if datafield.tag == "245" {
@@ -97,7 +145,22 @@ async fn parse_title(record: &RecordXml) -> String {
     title
 }
 
-async fn parse_author(record: &RecordXml) -> String {
+// async fn parse_title(record: &RecordXml) -> String {
+//     let mut title = String::new();
+//     for datafield in &record.datafields {
+//         if datafield.tag == "245" {
+//             for subfield in &datafield.subfields {
+//                 if subfield.code == "a" {
+//                     title = subfield.value.clone().unwrap_or_else(|| "".to_string());
+//                     // title explanation: <https://gist.github.com/birkin/57952fa4052167ddb8b5c98ec8beb920>
+//                 }
+//             }
+//         }
+//     }
+//     title
+// }
+
+fn parse_author(record: &RecordXml) -> String {
     let mut author = String::new();
     for datafield in &record.datafields {
         if datafield.tag == "100" {
@@ -110,6 +173,20 @@ async fn parse_author(record: &RecordXml) -> String {
     }
     author
 }
+
+// async fn parse_author(record: &RecordXml) -> String {
+//     let mut author = String::new();
+//     for datafield in &record.datafields {
+//         if datafield.tag == "100" {
+//             for subfield in &datafield.subfields {
+//                 if subfield.code == "a" {
+//                     author = subfield.value.clone().unwrap_or_else(|| "".to_string());
+//                 }
+//             }
+//         }
+//     }
+//     author
+// }
 
 async fn load_records(marc_xml_path: &str) -> Collection {
     // -- Read the MARC XML file
