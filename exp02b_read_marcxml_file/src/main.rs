@@ -144,6 +144,7 @@ fn load_records(marc_xml_path: &str) -> Collection {
 // }
 
 // ------------------------------------------------------------------
+
 // -- Structs to represent MARC XML structure -----------------------
 
 #[derive(Debug, Deserialize)]
