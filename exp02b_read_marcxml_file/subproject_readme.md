@@ -14,9 +14,16 @@
 
 (I love thinking about and experimenting with concurrency.)
 
-As an exercise, I'm going to write this single-threaded, but make all function-calls async (with awaits), to experiment with forcing myself to keep concurrency in the back of my mind. Also, I'll be curious to see whether I have to change any practices via the compiler. Then, hopefully, I can go back and implement concurrency where it would be beneficial.
+Just expored rayon a bit after reading this matsakis post, ["Rayon: data parallelism in Rust"](https://smallcultfollowing.com/babysteps/blog/2015/12/18/rayon-data-parallelism-in-rust/) -- and am removing all the default async code.
 
-An initial version of this, compared to the version with no async references (run on the 10.000 item file), is a bit slower, but ok:
+Running the updated code on the 10,000 item file, _not_ using any async for the process_file() calls to it's component functions, but instead using rayon on the full iteration through all the records, I get a slight improvement:
+
+- iterate through records via rayon: `./target/release/exp02b_read_marcxml_file  2.33s user 0.17s system 102% cpu 2.485 total`
+
+
+~~As an exercise, I'm going to write this single-threaded, but make all function-calls async (with awaits), to experiment with forcing myself to keep concurrency in the back of my mind. Also, I'll be curious to see whether I have to change any practices via the compiler. Then, hopefully, I can go back and implement concurrency where it would be beneficial.~~
+
+An initial version of this, compared to the version with no async references (run on the 10,000 item file), is a bit slower, but ok:
 
 - async definitions only: `./target/release/exp02b_read_marcxml_file  2.44s user 0.07s system 99% cpu 2.5355 total
 `
