@@ -14,12 +14,10 @@ fn main() {
         .unwrap();
 
     // -- set marc file path
-    let marc_xml_path: String =
-        "./source_files/Incremental_set_wcollection_bibs_20230303031312.xml".to_string(); // 42 records
-
-    // let marc_xml_path: String =
-    //     "./source_files/sample_bibs_2022050222_7532401250006966_new_99.xml".to_string(); // 10,000 records
-    // debug!("marc_xml_path, ``{:?}``", marc_xml_path);
+    let marc_xml_path: String = match std::env::var("MRC_EXP__MARCXML_FILE_PATH") {
+        Ok(val) => val,
+        Err(e) => panic!("couldn't interpret MARC_XML_PATH; error, ``{:?}``", e),
+    };
 
     // -- load xml
     let marc_records: Collection = load_records(&marc_xml_path);
@@ -50,45 +48,6 @@ fn process_record(record: &RecordXml) {
     );
 }
 
-fn parse_bibnum(record: &RecordXml) -> String {
-    let mut bibnum = String::new();
-    for datafield in &record.datafields {
-        if datafield.tag == "907" {
-            for subfield in &datafield.subfields {
-                if subfield.code == "a" {
-                    bibnum = subfield.value.clone().unwrap_or_else(|| "".to_string());
-                }
-            }
-        }
-    }
-    bibnum
-}
-
-fn parse_alma_mmsid(record: &RecordXml) -> String {
-    let mut alma_mmsid = String::new();
-    for controlfield in &record.controlfields {
-        if controlfield.tag == "001" {
-            // debug!("controlfield, ``{:?}``", controlfield);
-            alma_mmsid = controlfield.value.clone().unwrap_or_else(|| "".to_string());
-        }
-    }
-    alma_mmsid
-}
-
-// fn parse_alma_mmsid(record: &RecordXml) -> String {
-//     let mut alma_mmsid = String::new();
-//     for datafield in &record.datafields {
-//         if datafield.tag == "001" {
-//             for subfield in &datafield.subfields {
-//                 if subfield.code == "a" {
-//                     alma_mmsid = subfield.value.clone().unwrap_or_else(|| "".to_string());
-//                 }
-//             }
-//         }
-//     }
-//     alma_mmsid
-// }
-
 fn parse_title(record: &RecordXml) -> String {
     let mut title = String::new();
     for datafield in &record.datafields {
@@ -116,6 +75,31 @@ fn parse_author(record: &RecordXml) -> String {
         }
     }
     author
+}
+
+fn parse_alma_mmsid(record: &RecordXml) -> String {
+    let mut alma_mmsid = String::new();
+    for controlfield in &record.controlfields {
+        if controlfield.tag == "001" {
+            // debug!("controlfield, ``{:?}``", controlfield);
+            alma_mmsid = controlfield.value.clone().unwrap_or_else(|| "".to_string());
+        }
+    }
+    alma_mmsid
+}
+
+fn parse_bibnum(record: &RecordXml) -> String {
+    let mut bibnum = String::new();
+    for datafield in &record.datafields {
+        if datafield.tag == "907" {
+            for subfield in &datafield.subfields {
+                if subfield.code == "a" {
+                    bibnum = subfield.value.clone().unwrap_or_else(|| "".to_string());
+                }
+            }
+        }
+    }
+    bibnum
 }
 
 fn load_records(marc_xml_path: &str) -> Collection {
