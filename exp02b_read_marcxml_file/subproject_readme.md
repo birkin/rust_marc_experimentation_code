@@ -11,6 +11,28 @@
 
 ---
 
+# usage...
+
+```
+% cd ./exp02b_read_marcxml_file
+
+% source ../../load_envars/exp02b_read_marcxml_file.sh
+```
+
+...and then either:
+
+```
+% cargo run
+```
+
+...or: 
+
+```
+% ./target/release/exp02b_read_marcxml_file
+```
+
+---
+
 
 # misc notes...
 
