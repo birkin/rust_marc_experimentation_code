@@ -1,9 +1,13 @@
 # next
 
-- run parse-functions concurrently
+- get file-path from envar
 
-- get mmsid from marcxml
-
+- think about next steps...
+    - store pieces to sqlite
+        - do a lookup on the mmsid, to see if it's already in the db
+        - if not, add it
+        - if so, update it
+        
 
 ---
 
