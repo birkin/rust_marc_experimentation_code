@@ -14,12 +14,12 @@ fn main() {
         .unwrap();
 
     // -- set marc file path
-    // let marc_xml_path: String =
-    //     "./source_files/Incremental_set_wcollection_bibs_20230303031312.xml".to_string(); // 42 records
-
     let marc_xml_path: String =
-        "./source_files/sample_bibs_2022050222_7532401250006966_new_99.xml".to_string(); // 10,000 records
-    debug!("marc_xml_path, ``{:?}``", marc_xml_path);
+        "./source_files/Incremental_set_wcollection_bibs_20230303031312.xml".to_string(); // 42 records
+
+    // let marc_xml_path: String =
+    //     "./source_files/sample_bibs_2022050222_7532401250006966_new_99.xml".to_string(); // 10,000 records
+    // debug!("marc_xml_path, ``{:?}``", marc_xml_path);
 
     // -- load xml
     let marc_records: Collection = load_records(&marc_xml_path);
@@ -66,17 +66,28 @@ fn parse_bibnum(record: &RecordXml) -> String {
 
 fn parse_alma_mmsid(record: &RecordXml) -> String {
     let mut alma_mmsid = String::new();
-    for datafield in &record.datafields {
-        if datafield.tag == "001" {
-            for subfield in &datafield.subfields {
-                if subfield.code == "a" {
-                    alma_mmsid = subfield.value.clone().unwrap_or_else(|| "".to_string());
-                }
-            }
+    for controlfield in &record.controlfields {
+        if controlfield.tag == "001" {
+            // debug!("controlfield, ``{:?}``", controlfield);
+            alma_mmsid = controlfield.value.clone().unwrap_or_else(|| "".to_string());
         }
     }
     alma_mmsid
 }
+
+// fn parse_alma_mmsid(record: &RecordXml) -> String {
+//     let mut alma_mmsid = String::new();
+//     for datafield in &record.datafields {
+//         if datafield.tag == "001" {
+//             for subfield in &datafield.subfields {
+//                 if subfield.code == "a" {
+//                     alma_mmsid = subfield.value.clone().unwrap_or_else(|| "".to_string());
+//                 }
+//             }
+//         }
+//     }
+//     alma_mmsid
+// }
 
 fn parse_title(record: &RecordXml) -> String {
     let mut title = String::new();
@@ -158,18 +169,28 @@ struct Collection {
 
 #[derive(Debug, Deserialize)]
 struct RecordXml {
+    #[serde(rename = "controlfield", default)]
+    controlfields: Vec<ControlField>,
     #[serde(rename = "datafield", default)]
     datafields: Vec<DataField>,
+}
+
+#[derive(Debug, Deserialize)]
+struct ControlField {
+    #[serde(rename = "tag")]
+    tag: String,
+    #[serde(rename = "$value")]
+    value: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
 struct DataField {
     #[serde(rename = "tag")]
     tag: String,
-    #[serde(rename = "ind1")]
-    ind1: String,
-    #[serde(rename = "ind2")]
-    ind2: String,
+    // #[serde(rename = "ind1")]
+    // ind1: String,
+    // #[serde(rename = "ind2")]
+    // ind2: String,
     #[serde(rename = "subfield", default)]
     subfields: Vec<SubField>,
 }
