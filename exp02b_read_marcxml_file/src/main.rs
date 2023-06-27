@@ -6,6 +6,8 @@ use std::fs::File;
 use std::io::BufReader;
 use std::io::Read;
 
+// -- main controller -----------------------------------------------
+
 fn main() {
     // -- init logging
     SimpleLogger::new()
@@ -36,6 +38,8 @@ fn main() {
 
     info!("end of main()");
 }
+
+// -- helper functions ----------------------------------------------
 
 fn process_record(record: &RecordXml) {
     let title: String = parse_title(&record);
