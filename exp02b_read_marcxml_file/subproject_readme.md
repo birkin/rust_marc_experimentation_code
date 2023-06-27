@@ -1,6 +1,10 @@
 # next
 
-- get file-path from envar
+- label bibnum "raw_bibnum".
+
+- strip period from raw bibnum.
+
+- strip check-digit from raw bibnum.
 
 - think about next steps...
     - store pieces to sqlite
