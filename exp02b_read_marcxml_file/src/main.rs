@@ -18,7 +18,7 @@ fn main() {
     // -- set marc file path
     let marc_xml_path: String = match std::env::var("MRC_EXP__MARCXML_FILE_PATH") {
         Ok(val) => val,
-        Err(e) => panic!("couldn't interpret MARC_XML_PATH; error, ``{:?}``", e),
+        Err(e) => panic!("\n\ncouldn't interpret MARC_XML_PATH; error, ``{:?}``\n\n", e),
     };
 
     // -- load xml
@@ -46,10 +46,21 @@ fn process_record(record: &RecordXml) {
     let author: String = parse_author(&record);
     let alma_mmsid: String = parse_alma_mmsid(&record);
     let bibnum: String = parse_bibnum(&record);
+    let bibnum_wcd: String = remove_leading_period(&bibnum);  // removes leading '.'; yields bibnum _with_ check-digit
+
     println!(
-        "title, ``{:?}``; author, ``{:?}``; alma_mmsid, ``{:?}``; bibnum, ``{:?}``",
-        title, author, alma_mmsid, bibnum
+        "\ntitle, ``{:?}``; author, ``{:?}``; alma_mmsid, ``{:?}``; raw_bibnum, ``{:?}``; bibnum_wcd, ``{:?}``",
+        title, author, alma_mmsid, bibnum, bibnum_wcd
     );
+
+    // let bibnum_wcd: String = bibnum[1..].to_string();  // removes leading '.'; yields bibnum _with_ check-digit
+    // let bibnum_wocd: String = bibnum_wcd[..bibnum_wcd.len()-1].to_string(); // yields bibnum _without_ check-digit
+
+    // println!(
+    //     "\ntitle, ``{:?}``; author, ``{:?}``; alma_mmsid, ``{:?}``; raw_bibnum, ``{:?}``",
+    //     title, author, alma_mmsid, bibnum
+    // );
+
 }
 
 fn parse_title(record: &RecordXml) -> String {
@@ -106,6 +117,26 @@ fn parse_bibnum(record: &RecordXml) -> String {
     bibnum
 }
 
+
+// fn remove_leading_period(bibnum: &str) -> String {
+//     let mut bibnum_wcd = String::new();
+//     if bibnum.starts_with('.') {
+//         bibnum_wcd = bibnum[1..].to_string();
+//     } else {
+//         bibnum_wcd = bibnum.to_string();
+//     }
+//     bibnum_wcd
+// }
+
+fn remove_leading_period(bibnum: &str) -> String {
+    if bibnum.starts_with('.') {
+        bibnum[1..].to_string()
+    } else {
+        bibnum.to_string()
+    }
+}
+
+
 fn load_records(marc_xml_path: &str) -> Collection {
     // -- Read the MARC XML file
     // let file = File::open(marc_xml_path)?;
@@ -146,7 +177,6 @@ fn load_records(marc_xml_path: &str) -> Collection {
 // }
 
 // ------------------------------------------------------------------
-
 // -- Structs to represent MARC XML structure -----------------------
 
 #[derive(Debug, Deserialize)]
@@ -191,6 +221,36 @@ struct SubField {
     // value: String,
     value: Option<String>,
 }
+
+// ------------------------------------------------------------------
+// -- TESTS ---------------------------------------------------------
+
+#[cfg(test)]
+mod tests {
+    use super::*; // Bring the outer functions into scope for testing.
+
+    #[test]
+    fn test_remove_leading_period() {
+        // A test case with a leading period.
+        let input = ".12345";
+        let expected = "12345";
+        let result = remove_leading_period(input);
+        assert_eq!(result, expected);
+
+        // A test case without a leading period.
+        let input = "12345";
+        let expected = "12345";
+        let result = remove_leading_period(input);
+        assert_eq!(result, expected);
+        
+        // checks handling of empty-string
+        let input = "";
+        let expected = "";
+        let result = remove_leading_period(input);
+        assert_eq!(result, expected);
+    }
+}
+
 
 // ------------------------------------------------------------------
 // -- Scratch work --------------------------------------------------
