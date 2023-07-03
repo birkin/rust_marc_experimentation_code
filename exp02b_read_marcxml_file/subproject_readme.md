@@ -1,10 +1,13 @@
 # next
 
-- label bibnum "raw_bibnum".
+√ label bibnum "raw_bibnum".
+√ strip period from raw bibnum.
+√ strip check-digit from raw bibnum.
 
-- strip period from raw bibnum.
-
-- strip check-digit from raw bibnum.
+- address panics --> use functions for all bibnum parsing, and add tests.
+    - handle "bibnum_wocd"
+    
+- add bruknow url as demo.
 
 - think about next steps...
     - store pieces to sqlite
