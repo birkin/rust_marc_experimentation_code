@@ -3,12 +3,10 @@
 √ label bibnum "raw_bibnum".
 √ strip period from raw bibnum.
 √ strip check-digit from raw bibnum.
-
-√ address panics
-
 √ handle "bibnum_wocd" -- uh... don't remember what this means! Oh, with-check-digit and without-check-digit.
-    
-- add bruknow url.
+√ address panics
+  
+√ add bruknow url.
 
 - think about next steps...
     - store pieces to sqlite

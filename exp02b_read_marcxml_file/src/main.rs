@@ -50,20 +50,15 @@ fn process_record(record: &RecordXml) {
     let alma_mmsid: String = parse_alma_mmsid(&record);
     let bibnum: String = parse_bibnum(&record);
     let bibnum_wcd: String = remove_leading_period(&bibnum); // removes leading '.'; yields bibnum _with_ check-digit
-    let bibnum_wocd: String = bibnum_wcd[..bibnum_wcd.len() - 1].to_string(); // yields bibnum _without_ check-digit
-
-    println!(
-        "\ntitle, ``{:?}``; author, ``{:?}``; alma_mmsid, ``{:?}``; raw_bibnum, ``{:?}``; bibnum_wcd, ``{:?}``; bibnum_wocd, ``{:?}``",
-        title, author, alma_mmsid, bibnum, bibnum_wcd, bibnum_wocd
+    let bibnum_wocd: String = remove_checkdigit(&bibnum_wcd); // yields bibnum _without_ check-digit
+    let bruknow_url: String = format!(
+        "https://bruknow.library.brown.edu/discovery/fulldisplay?docid=alma{}&context=L&vid=01BU_INST:BROWN&lang=en",
+        &alma_mmsid
     );
-
-    // let bibnum_wcd: String = bibnum[1..].to_string();  // removes leading '.'; yields bibnum _with_ check-digit
-    // let bibnum_wocd: String = bibnum_wcd[..bibnum_wcd.len()-1].to_string(); // yields bibnum _without_ check-digit
-
-    // println!(
-    //     "\ntitle, ``{:?}``; author, ``{:?}``; alma_mmsid, ``{:?}``; raw_bibnum, ``{:?}``",
-    //     title, author, alma_mmsid, bibnum
-    // );
+    println!(
+        "\ntitle, ``{:?}``; author, ``{:?}``; alma_mmsid, ``{:?}``; raw_bibnum, ``{:?}``; bibnum_wcd, ``{:?}``; bibnum_wocd, ``{:?}``; bruknow_url, ``{:?}``",
+        title, author, alma_mmsid, bibnum, bibnum_wcd, bibnum_wocd, bruknow_url
+    );
 }
 
 fn parse_title(record: &RecordXml) -> String {
@@ -125,6 +120,15 @@ fn remove_leading_period(bibnum: &str) -> String {
         bibnum[1..].to_string()
     } else {
         bibnum.to_string()
+    }
+}
+
+fn remove_checkdigit(bibnum_wcd: &str) -> String {
+    // if length is 9, remove check-digit, otherwise, return the original string
+    if bibnum_wcd.len() == 9 {
+        bibnum_wcd[..bibnum_wcd.len() - 1].to_string()
+    } else {
+        bibnum_wcd.to_string()
     }
 }
 
@@ -223,14 +227,14 @@ mod tests {
     #[test]
     fn test_remove_leading_period() {
         // checks leading period.
-        let input = ".12345";
-        let expected = "12345";
+        let input = ".b12345678";
+        let expected = "b12345678";
         let result = remove_leading_period(input);
         assert_eq!(result, expected);
 
         // checks no leading period.
-        let input = "12345";
-        let expected = "12345";
+        let input = "b12345678";
+        let expected = "b12345678";
         let result = remove_leading_period(input);
         assert_eq!(result, expected);
 
@@ -238,6 +242,27 @@ mod tests {
         let input = "";
         let expected = "";
         let result = remove_leading_period(input);
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_remove_check_digit() {
+        // checks check-digit.
+        let input = "b12345678";
+        let expected = "b1234567";
+        let result = remove_checkdigit(input);
+        assert_eq!(result, expected);
+
+        // checks no check-digit.
+        let input = "b1234567";
+        let expected = "b1234567";
+        let result = remove_checkdigit(input);
+        assert_eq!(result, expected);
+
+        // checks empty-string
+        let input = "";
+        let expected = "";
+        let result = remove_checkdigit(input);
         assert_eq!(result, expected);
     }
 }
