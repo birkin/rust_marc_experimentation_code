@@ -4,10 +4,11 @@
 √ strip period from raw bibnum.
 √ strip check-digit from raw bibnum.
 
-- address panics --> use functions for all bibnum parsing, and add tests.
-    - handle "bibnum_wocd"
+√ address panics
+
+√ handle "bibnum_wocd" -- uh... don't remember what this means! Oh, with-check-digit and without-check-digit.
     
-- add bruknow url as demo.
+- add bruknow url.
 
 - think about next steps...
     - store pieces to sqlite

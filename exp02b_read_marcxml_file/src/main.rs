@@ -50,10 +50,11 @@ fn process_record(record: &RecordXml) {
     let alma_mmsid: String = parse_alma_mmsid(&record);
     let bibnum: String = parse_bibnum(&record);
     let bibnum_wcd: String = remove_leading_period(&bibnum); // removes leading '.'; yields bibnum _with_ check-digit
+    let bibnum_wocd: String = bibnum_wcd[..bibnum_wcd.len() - 1].to_string(); // yields bibnum _without_ check-digit
 
     println!(
-        "\ntitle, ``{:?}``; author, ``{:?}``; alma_mmsid, ``{:?}``; raw_bibnum, ``{:?}``; bibnum_wcd, ``{:?}``",
-        title, author, alma_mmsid, bibnum, bibnum_wcd
+        "\ntitle, ``{:?}``; author, ``{:?}``; alma_mmsid, ``{:?}``; raw_bibnum, ``{:?}``; bibnum_wcd, ``{:?}``; bibnum_wocd, ``{:?}``",
+        title, author, alma_mmsid, bibnum, bibnum_wcd, bibnum_wocd
     );
 
     // let bibnum_wcd: String = bibnum[1..].to_string();  // removes leading '.'; yields bibnum _with_ check-digit
@@ -118,16 +119,6 @@ fn parse_bibnum(record: &RecordXml) -> String {
     }
     bibnum
 }
-
-// fn remove_leading_period(bibnum: &str) -> String {
-//     let mut bibnum_wcd = String::new();
-//     if bibnum.starts_with('.') {
-//         bibnum_wcd = bibnum[1..].to_string();
-//     } else {
-//         bibnum_wcd = bibnum.to_string();
-//     }
-//     bibnum_wcd
-// }
 
 fn remove_leading_period(bibnum: &str) -> String {
     if bibnum.starts_with('.') {
@@ -231,19 +222,19 @@ mod tests {
 
     #[test]
     fn test_remove_leading_period() {
-        // A test case with a leading period.
+        // checks leading period.
         let input = ".12345";
         let expected = "12345";
         let result = remove_leading_period(input);
         assert_eq!(result, expected);
 
-        // A test case without a leading period.
+        // checks no leading period.
         let input = "12345";
         let expected = "12345";
         let result = remove_leading_period(input);
         assert_eq!(result, expected);
 
-        // checks handling of empty-string
+        // checks empty-string
         let input = "";
         let expected = "";
         let result = remove_leading_period(input);
