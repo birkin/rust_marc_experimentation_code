@@ -24,6 +24,28 @@ fn main() {
         ),
     };
 
+    // -- create empty sqlite db with table with proper fields
+    let db_path: String = match std::env::var("MRC_EXP__DB_PATH") {
+        Ok(val) => val,
+        Err(e) => panic!(
+            "\n\nCouldn't interpret DB_PATH; error, ``{:?}``; are envars loaded?\n\n",
+            e
+        ),
+    };
+    let db_path = Path::new(&db_path);
+    let conn = Connection::open(db_path).unwrap();
+    conn.execute(
+        "CREATE TABLE IF NOT EXISTS items (
+            alma_mmsid TEXT NOT NULL,
+            bibnum TEXT NOT NULL,
+            title TEXT NOT NULL,
+            author TEXT NOT NULL
+        )",
+        NO_PARAMS,
+    )
+    .unwrap();
+
+
     // -- load xml
     let marc_records: Collection = load_records(&marc_xml_path);
     // debug!("first marc_record, ``{:?}``", marc_records.records[0]);
@@ -51,7 +73,7 @@ fn process_record(record: &RecordXml) {
     let bibnum: String = parse_bibnum(&record);
     let bibnum_wcd: String = remove_leading_period(&bibnum); // removes leading '.'; yields bibnum _with_ check-digit
     let bibnum_wocd: String = remove_checkdigit(&bibnum_wcd); // yields bibnum _without_ check-digit
-    let bruknow_url: String = format!(
+    let bruknow_url: String = format!( // just a test -- this url would be created on the fly, not saved into db
         "https://bruknow.library.brown.edu/discovery/fulldisplay?docid=alma{}&context=L&vid=01BU_INST:BROWN&lang=en",
         &alma_mmsid
     );
