@@ -25,25 +25,25 @@ fn main() {
     };
 
     // -- create empty sqlite db with table with proper fields
-    let db_path: String = match std::env::var("MRC_EXP__DB_PATH") {
-        Ok(val) => val,
-        Err(e) => panic!(
-            "\n\nCouldn't interpret DB_PATH; error, ``{:?}``; are envars loaded?\n\n",
-            e
-        ),
-    };
-    let db_path = Path::new(&db_path);
-    let conn = Connection::open(db_path).unwrap();
-    conn.execute(
-        "CREATE TABLE IF NOT EXISTS items (
-            alma_mmsid TEXT NOT NULL,
-            bibnum TEXT NOT NULL,
-            title TEXT NOT NULL,
-            author TEXT NOT NULL
-        )",
-        NO_PARAMS,
-    )
-    .unwrap();
+    // let db_path: String = match std::env::var("MRC_EXP__DB_PATH") {
+    //     Ok(val) => val,
+    //     Err(e) => panic!(
+    //         "\n\nCouldn't interpret DB_PATH; error, ``{:?}``; are envars loaded?\n\n",
+    //         e
+    //     ),
+    // };
+    // let db_path = Path::new(&db_path);
+    // let conn = Connection::open(db_path).unwrap();
+    // conn.execute(
+    //     "CREATE TABLE IF NOT EXISTS items (
+    //         alma_mmsid TEXT NOT NULL,
+    //         bibnum TEXT NOT NULL,
+    //         title TEXT NOT NULL,
+    //         author TEXT NOT NULL
+    //     )",
+    //     NO_PARAMS,
+    // )
+    // .unwrap();
 
 
     // -- load xml
