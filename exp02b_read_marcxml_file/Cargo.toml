@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 log = "0.4.17"
-marc = "3.1.0"
+#marc = "3.1.0"
 rayon = "1.7.0"
 serde = { version = "1.0.160", features = ["derive"] }
 serde-xml-rs = "0.6.0"
