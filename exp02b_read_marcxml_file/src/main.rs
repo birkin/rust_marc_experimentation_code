@@ -45,7 +45,6 @@ fn main() {
     // )
     // .unwrap();
 
-
     // -- load xml
     let marc_records: Collection = load_records(&marc_xml_path);
     // debug!("first marc_record, ``{:?}``", marc_records.records[0]);
